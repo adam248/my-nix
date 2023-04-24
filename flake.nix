@@ -54,3 +54,7 @@
 
 # to build and switch on a system
 # `sudo nixos-rebuild switch --flake .#`
+
+# to update to the latest versions where possible
+# `nix flake update --recreate-lock-file`
+
