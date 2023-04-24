@@ -34,7 +34,7 @@
           inherit system;
 
           modules = [
-            ./hosts/nxbx-dskp/configuration.nix
+            ./hosts/nxbx-dsktp/configuration.nix
           ];
         };
       };
