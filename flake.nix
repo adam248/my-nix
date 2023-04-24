@@ -22,6 +22,20 @@
       lib = nixpkgs.lib;
     in
     {
+      # # how to setup home-manager
+      # homeManagerConfigurations = {
+      #   adam = home-manager.lib.homeManagerConfiguration {
+      #     inherit system pkgs;
+      #     username = "adam";
+      #     homeDirectory = "/home/adam/";
+      #     configuration = {
+      #       imports = [
+      #         ./users/wil/home.nix
+      #       ];
+      #     };
+      #   };
+      # };
+
       nixosConfigurations = { 
         # each config named here has to be the same as the hostname
 
