@@ -39,8 +39,13 @@
       nixosConfigurations = { 
         # each config named here has to be the same as the hostname
 
-        # nxbx-vm = lib.nixosSystem {
         #   # TODO: my VM machine
+        # vm-srvr = lib.nixosSystem {
+        #   inherit system;
+        # };
+
+        #   # TODO: my VM machine
+        # vm-dsktp = lib.nixosSystem {
         #   inherit system;
         # };
         nxbx-dsktp = lib.nixosSystem {
