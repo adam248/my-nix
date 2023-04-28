@@ -155,6 +155,7 @@ in
         let mapleader = " "
 
         :nnoremap <leader>f :Telescope find_files<CR>
+        :nnoremap <leader>g :Telescope live_grep<CR>
       '';
       packages.myVimPackage = with pkgs.vimPlugins; {
         start = [
@@ -259,11 +260,12 @@ in
       vlc
       unstable.spotify
       unstable.rambox
-      steam
+      unstable.steam
       agenda
       gimp
       krita
       blender
+      unstable.godot_4
       davinci-resolve
       obsidian
       obs-studio
