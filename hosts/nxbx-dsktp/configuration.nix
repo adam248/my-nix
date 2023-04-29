@@ -262,17 +262,23 @@ in
       unstable.rambox
       unstable.steam
       agenda
+      obsidian
+
       gimp
-      krita
+      audacity
       blender
       unstable.godot_4
-      davinci-resolve
-      obsidian
       obs-studio
+
+      krita
+
+      davinci-resolve
+      #libsForQt5.kdenlive
+
       reaper
       unstable.musescore
+
       unstable.cups-pdf-to-pdf
-      audacity
       #wine wine64 winetricks
       #playonlinux
       unstable.lutris
