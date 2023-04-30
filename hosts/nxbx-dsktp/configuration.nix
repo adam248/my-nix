@@ -258,7 +258,7 @@ in
       keepass xdotool
       vscode
       vlc
-      unstable.spotify
+      #unstable.spotify # it thinks it is in offline mode maybe net isue
       unstable.rambox
       unstable.steam
       agenda
@@ -273,7 +273,7 @@ in
       krita
 
       davinci-resolve
-      #libsForQt5.kdenlive
+      libsForQt5.kdenlive
 
       reaper
       unstable.musescore
@@ -319,6 +319,8 @@ in
       unstable.ardour
       units
       just
+
+      unstable.localsend
     ];
   };
 
