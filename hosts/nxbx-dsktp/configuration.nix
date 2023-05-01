@@ -321,6 +321,8 @@ in
       just
 
       unstable.localsend
+
+      unstable.kicad
     ];
   };
 
