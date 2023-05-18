@@ -154,6 +154,8 @@ in
 
         let mapleader = " "
 
+        set clipboard+=unnamedplus
+
         :nnoremap <leader>f :Telescope find_files<CR>
         :nnoremap <leader>g :Telescope live_grep<CR>
       '';
@@ -320,9 +322,13 @@ in
       units
       just
 
+      libsForQt5.kcalc
+
       unstable.localsend
 
       unstable.kicad
+
+      #unstable.freecad # free alt to Fusion360
     ];
   };
 
