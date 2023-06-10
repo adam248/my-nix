@@ -328,6 +328,8 @@ in
 
       unstable.kicad
 
+      tldr
+
       #unstable.freecad # free alt to Fusion360
     ];
   };
