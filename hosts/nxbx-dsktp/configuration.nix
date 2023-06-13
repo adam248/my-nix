@@ -97,6 +97,8 @@ in
       # Using Plasma by default
       displayManager.sddm.enable = true;
       displayManager.sddm.autoNumlock = true;
+      displayManager.autoLogin.enable = true;
+      displayManager.autoLogin.user = "adam";
 
       # Set desktop manager (full environment)
       desktopManager.plasma5.enable = true;
@@ -437,6 +439,9 @@ in
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
   system.copySystemConfiguration = true;
+  system.autoUpgrade.enable = true;
+  system.autoUpgrade.allowReboot = true;
+  system.autoUpgrade.channel = "https://channels.nixos.org/nixos-23.05";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
