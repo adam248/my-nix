@@ -24,6 +24,7 @@ in
       ./hardware-configuration.nix
     ];
 
+
   # Install the latest Linux Kernel available
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -180,21 +181,22 @@ in
   # Remove sound.enable or turn it off if you had it set previously,
   # it seems to cause conflicts with pipewire
   # Basic
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  #sound.enable = true;
+  #hardware.pulseaudio.enable = true;
+
   hardware.bluetooth.enable = true;
 
   # Pipewire
   # rtkit is optional but recommended  
-#  security.rtkit.enable = true;
-#  services.pipewire = {
-#    enable = true; # this also enables wireplumber by default
-#    alsa.enable = true;
-#    alsa.support32Bit = true;
-#    pulse.enable = true;
-#    # If you want to use JACK applications, uncomment this
-#    jack.enable = true;
-#  };
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true; # this also enables wireplumber by default
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    jack.enable = true;
+  };
 
   # Enable XBox controllers
   hardware.xpadneo.enable = true;
@@ -207,10 +209,6 @@ in
 
   # Enable Docker
   #virtualisation.docker.enable = true;
-
-  # Enable JupyterHub server
-  services.jupyterhub.enable = true;
-  services.jupyterhub.port = 8888;
 
   # Add .local/bin to PATH
   environment.localBinInPath = true;
@@ -233,12 +231,12 @@ in
     ];
     initialPassword = "adam";
     packages = with pkgs; [
-      (runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
-      ''
-      mkdir -p "$out/bin"
-      makeWrapper "${playwright}/bin/playwright" "$out/bin/playwright" \
-        --set PLAYWRIGHT_BROWSERS_PATH "${playwright.browsers}"
-      '')
+      #(runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
+      #''
+      #mkdir -p "$out/bin"
+      #makeWrapper "${playwright}/bin/playwright" "$out/bin/playwright" \
+      #  --set PLAYWRIGHT_BROWSERS_PATH "${playwright.browsers}"
+      #'')
       flameshot # screenshots
       alsa-utils # audio management
       pavucontrol # pusleaudio control GUI
@@ -251,6 +249,7 @@ in
       wireshark
 
       git
+      github-desktop
       lazygit
       qdirstat
       zip
@@ -439,9 +438,10 @@ in
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
   system.copySystemConfiguration = true;
-  system.autoUpgrade.enable = true;
-  system.autoUpgrade.allowReboot = true;
-  system.autoUpgrade.channel = "https://channels.nixos.org/nixos-23.05";
+  system.autoUpgrade = {
+    enable = true;
+    allowReboot = false;
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -460,7 +460,12 @@ in
         config = config.nixpkgs.config;
       };
     };
+    permittedInsecurePackages = [
+                "openssl-1.1.1u"
+                "python-2.7.18.6"
+              ];
   };
+
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.auto-optimise-store = true;
 
