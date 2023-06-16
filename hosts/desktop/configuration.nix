@@ -341,12 +341,12 @@ in
     ];
   };
 
-#  home-manager.users."adam" = { pkgs, ... }: {
-#    home.stateVersion = "23.05";
-#    home.packages = with pkgs; [
-#      typst
-#    ];
-#  };
+  home-manager.users."adam" = { pkgs, ... }: {
+    home.stateVersion = "23.05";
+    home.packages = with pkgs; [
+      typst
+    ];
+  };
 
   # testing out programs or services
   services = {
