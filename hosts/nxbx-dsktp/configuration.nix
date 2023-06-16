@@ -2,7 +2,6 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-
 # Contents (Line Numbers)
 #
 # Background Services: 100
@@ -16,7 +15,7 @@
 let
   unstableTarball =
     fetchTarball
-      https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz;
+      "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
 in
 {
   imports =
@@ -171,6 +170,17 @@ in
           harpoon
           nvim-treesitter.withAllGrammars
           fugitive
+          {
+              plugin = nvim-lspconfig;
+              config = ''
+                  lua << EOF
+                  require('lspconfig').rnix.setup{}
+                  require('lspconfig').pyright.setup{}
+                  require('lspconfig').rust_analyzer.setup{}
+                  require('lspconfig').tsserver.setup{}
+                  EOF
+              '';
+          }
         ];
       };
     };
@@ -332,6 +342,9 @@ in
       tldr
 
       #unstable.freecad # free alt to Fusion360
+
+      rnix-lsp
+      rust-analyzer
     ];
   };
 
@@ -354,27 +367,28 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    tree
+    bat
+    bottom # kewler than htop (use btm to run)
     file
+    fd # required for nvim telescope
     kitty # a better terminal emulator
     man # make sure I have man pages available
-    wget
+    links2 # CLI Web Browser
     htop
     gotop # vtop
-    nvtop # GPU
-    bottom # kewler than htop (use btm to run)
+    gcc
+    qpwgraph
+    groff # fix for some --help outputs
     ffmpeg
     ranger
     virt-manager
     clinfo # GPU extras
     exa
     python3
-    gcc
-    qpwgraph
-    groff # fix for some --help outputs
+    nvtop # GPU
     ripgrep # required for nvim telescope live-grep
-    fd # required for nvim telescope
-    links2 # CLI Web Browser
+    tree
+    wget
     unzip
   ];
 
