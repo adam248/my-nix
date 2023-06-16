@@ -20,6 +20,10 @@ alias installed='nix-env -q'
 function uninstall {
 	nix-env --uninstall $1
 }
+alias generations='nix-env --list-generations'
+function collect-garbage {
+	sudo nix-collect-garbage -d
+}
 
 function mc {
 	# mark (p)cap $count
