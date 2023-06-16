@@ -101,7 +101,7 @@ in
       displayManager.sddm.enable = true;
       displayManager.sddm.autoNumlock = true;
       displayManager.autoLogin.enable = true;
-      displayManager.autoLogin.user = user;
+      displayManager.autoLogin.user = "adam";
 
       # Set desktop manager (full environment)
       desktopManager.plasma5.enable = true;
@@ -236,13 +236,13 @@ in
   hardware.ledger.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.user = {
+  users.users."adam" = {
     isNormalUser = true;
     extraGroups = [
       "wheel" "video" "audio" "networkmanager" "lp" "scanner" "libvirtd"
       "wireshark"
     ];
-    initialPassword = user;
+    initialPassword = "adam";
     packages = with pkgs; [
       #(runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
       #''
@@ -341,12 +341,12 @@ in
     ];
   };
 
-  home-manager.users.user = { pkgs, ... }: {
-    home.stateVersion = "23.05";
-    home.packages = with pkgs; [
-      typst
-    ];
-  };
+#  home-manager.users."adam" = { pkgs, ... }: {
+#    home.stateVersion = "23.05";
+#    home.packages = with pkgs; [
+#      typst
+#    ];
+#  };
 
   # testing out programs or services
   services = {
