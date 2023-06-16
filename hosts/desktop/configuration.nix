@@ -257,15 +257,12 @@ in
       ethtool
       iperf
       dig # enables nsloopup for DNS checking
-      nmap
-      wireshark
 
       git
       github-desktop
       lazygit
       qdirstat
-      zip
-      xclip
+      xclip # easy copy to clipboard from console
       firefox
       unstable.google-chrome
       thunderbird
@@ -273,7 +270,7 @@ in
       keepass xdotool
       vscode
       vlc
-      #unstable.spotify # it thinks it is in offline mode maybe net isue
+      unstable.spotify # it thinks it is in offline mode maybe net isue
       unstable.rambox
       unstable.steam
       agenda
@@ -303,7 +300,6 @@ in
       libsForQt5.kalendar
       bottles # Wineprefix manager
       neofetch
-      pciutils # required for lspci,
       inkscape
       imagemagick
       unstable.onlyoffice-bin
@@ -314,13 +310,11 @@ in
       unstable.linvstmanager
       #airwave #<- broken, needs third-party install
       notepadqq
-      openssl
       gh # Github CLI tool
       libsForQt5.kcharselect
       discord
       qbittorrent
       unstable.exodus
-      gnome.gnome-boxes
       trezor-suite
       trezor-udev-rules
       ffmpeg
@@ -333,15 +327,12 @@ in
       authy
       unstable.ardour
       units
-      just
 
       libsForQt5.kcalc
 
       unstable.localsend
 
       unstable.kicad
-
-      tldr
 
       #unstable.freecad # free alt to Fusion360
 
@@ -355,7 +346,6 @@ in
     home.packages = with pkgs; [
       typst
     ];
-    programs.bash.enable = true;
   };
 
   # testing out programs or services
@@ -376,6 +366,7 @@ in
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+  # Available to all users (including root)
   environment.systemPackages = with pkgs; [
     bat
     bottom # kewler than htop (use btm to run)
@@ -395,11 +386,15 @@ in
     clinfo # GPU extras
     exa
     python3
+    pciutils # required for lspci,
     nvtop # GPU
     ripgrep # required for nvim telescope live-grep
     tree
+    tldr
     wget
+    wireshark
     unzip
+    zip
   ];
 
   programs.tmux = {
