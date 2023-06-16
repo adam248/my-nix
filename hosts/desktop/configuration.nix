@@ -13,6 +13,7 @@
 { config, pkgs, ... }:
 
 let
+  user = "adam"; # currently unused but if you want to use this variable do this: ${user}
   unstableTarball =
     fetchTarball
       "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
@@ -100,7 +101,7 @@ in
       displayManager.sddm.enable = true;
       displayManager.sddm.autoNumlock = true;
       displayManager.autoLogin.enable = true;
-      displayManager.autoLogin.user = "adam";
+      displayManager.autoLogin.user = user;
 
       # Set desktop manager (full environment)
       desktopManager.plasma5.enable = true;
@@ -235,13 +236,13 @@ in
   hardware.ledger.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.adam = {
+  users.users.user = {
     isNormalUser = true;
     extraGroups = [
       "wheel" "video" "audio" "networkmanager" "lp" "scanner" "libvirtd"
       "wireshark"
     ];
-    initialPassword = "adam";
+    initialPassword = user;
     packages = with pkgs; [
       #(runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
       #''
@@ -258,7 +259,6 @@ in
       iperf
       dig # enables nsloopup for DNS checking
 
-      git
       github-desktop
       lazygit
       qdirstat
@@ -341,7 +341,7 @@ in
     ];
   };
 
-  home-manager.users.adam = { pkgs, ... }: {
+  home-manager.users.user = { pkgs, ... }: {
     home.stateVersion = "23.05";
     home.packages = with pkgs; [
       typst
@@ -376,6 +376,7 @@ in
     man # make sure I have man pages available
     links2 # CLI Web Browser
     htop
+    git
     gotop # vtop
     gcc
     qpwgraph
