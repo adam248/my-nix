@@ -1,0 +1,1 @@
+# A collection of nvim configurations from other people who use Home Manager to build nvim

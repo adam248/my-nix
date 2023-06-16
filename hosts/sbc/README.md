@@ -1,0 +1,3 @@
+# SBC - Single Board Computer
+
+eg. Raspberry Pi, etc...

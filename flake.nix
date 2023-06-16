@@ -48,12 +48,12 @@
         # vm-dsktp = lib.nixosSystem {
         #   inherit system;
         # };
-        nxbx-dsktp = lib.nixosSystem {
+        desktop = lib.nixosSystem {
           # TODO: my main desktop
           inherit system;
 
           modules = [
-            ./hosts/nxbx-dsktp/configuration.nix
+            ./hosts/desktop/configuration.nix
           ];
         };
       };
