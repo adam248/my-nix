@@ -17,7 +17,7 @@
   };
 
   imports = [
-    ./nvim
+    ./neovim
   ];
 
   programs.home-manager.enable = true;

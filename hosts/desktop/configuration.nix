@@ -270,7 +270,8 @@ in
       keepass xdotool
       vscode
       vlc
-      unstable.spotify # it thinks it is in offline mode maybe net isue
+      #unstable.spotify # it thinks it is in offline mode maybe net isue
+      #spotifyd # use the services.spotifyd.enable
       unstable.rambox
       unstable.steam
       agenda
@@ -347,6 +348,10 @@ in
       typst
     ];
   };
+
+  # Enable Flatpak
+  services.flatpak.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   # testing out programs or services
   services = {
@@ -449,7 +454,9 @@ in
   services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 
+    57621 # spotify local discovery
+  ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;

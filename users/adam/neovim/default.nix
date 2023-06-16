@@ -1,5 +1,4 @@
-{ config, pkgs, lib, ... }:
-with lib;
+{ config, pkgs, lib, ... }: with lib;
 
 {
   programs.neovim = {

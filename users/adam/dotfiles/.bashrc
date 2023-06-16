@@ -1,7 +1,5 @@
 eval "$(starship init bash)"
 
-# SMASH Python into NixOS like a freight train with nothing left to lose
-#source ~/.venv/bin/activate
 
 # Aliases
 # Manage NixOS system configurations and updates
