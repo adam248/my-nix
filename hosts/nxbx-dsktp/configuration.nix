@@ -21,6 +21,8 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      # Include Home Manager
+      <home-manager/nixos>
     ];
 
 
@@ -346,6 +348,14 @@ in
       rnix-lsp
       rust-analyzer
     ];
+  };
+
+  home-manager.users.adam = { pkgs, ... }: {
+    home.stateVersion = "23.05";
+    home.packages = with pkgs; [
+      typst
+    ];
+    programs.bash.enable = true;
   };
 
   # testing out programs or services
