@@ -12,6 +12,15 @@ alias hconfig='sudo vim /etc/nixos/hardware-configuration.nix'
 alias q='exit'
 alias cat='bat'
 
+# Nix env
+function install {
+	nix-env -iA nixos.$1
+}
+alias installed='nix-env -q'
+function uninstall {
+	nix-env --uninstall $1
+}
+
 function mc {
 	# mark (p)cap $count
 	# this is for marking a pcap in wireshark
@@ -24,13 +33,16 @@ function mc {
 }
 
 function backupnix {
-	cp /etc/nixos/configuration.nix ~/my-nix/hosts/nxbx-dsktp/
-	cp /etc/nixos/hardware-configuration.nix ~/my-nix/hosts/nxbx-dsktp/
+	cp /etc/nixos/configuration.nix ~/my-nix/hosts/desktop/
+	cp /etc/nixos/hardware-configuration.nix ~/my-nix/hosts/desktop/
+	cp ~/.bashrc ~/my-nix/users/adam/dotfiles/
+	cp ~/.profile ~/my-nix/users/adam/dotfiles/
 }
 
 function update {
 	echo "sudo nixos-rebuild switch"
 	sudo nixos-rebuild switch
+	source ~/.bashrc
 	backupnix
 	echo "Backed up configs to ~/my-nix | REMEMBER TO 'git push' to GitHub"
 }
@@ -123,7 +135,12 @@ alias sl=exa
 alias nv="nvim"
 
 # Edit this file from anywhere
-alias bashrc='vim ~/.bashrc'
+#alias bashrc='vim ~/.bashrc'
+function bashrc {
+	nvim ~/.bashrc
+	source ~/.bashrc
+	backupnix
+}
 # Update terminal bash config
 alias ubsh='source ~/.bashrc'
 
