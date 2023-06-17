@@ -22,7 +22,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # Include Home Manager - you must add the home manager channel with sudo
+      # Include Home Manager - uses home-manager channel (sudo)
       <home-manager/nixos>
     ];
 
@@ -135,6 +135,13 @@ in
 
   # Enable KDEConnect
   programs.kdeconnect.enable = true;
+
+  # Enable steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+  };
 
   # Enable Autojump
   programs.autojump.enable = true;
@@ -275,7 +282,6 @@ in
       #unstable.spotify # it thinks it is in offline mode maybe net isue
       #spotifyd # use the services.spotifyd.enable
       unstable.rambox
-      unstable.steam
       agenda
       obsidian
 
@@ -484,7 +490,7 @@ in
   system.copySystemConfiguration = true;
   system.autoUpgrade = {
     enable = true;
-    allowReboot = false;
+    allowReboot = true;
   };
 
   # This value determines the NixOS release from which the default
