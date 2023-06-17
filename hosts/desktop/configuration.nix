@@ -80,9 +80,11 @@ in
   # Set to Australia locale
   i18n.defaultLocale = "en_AU.UTF-8";
   console = {
-    font = "Lat2-Terminus16";
-    keyMap = "us";
-  #   useXkbConfig = true; # use xkbOptions in tty.
+    packages = [ pkgs.terminus_font ];
+    #font = "Lat2-Terminus16";
+    font = "${pkgs.terminus_font}/share/consolefonts/ter-i32b.psf.gz";
+    #keyMap = "us"; # is being declared elsewhere
+    useXkbConfig = true; # use xkbOptions in tty.
   };
 
   services = {
@@ -357,11 +359,16 @@ in
 
   # Enable Flatpak
   services.flatpak.enable = true;
+  services.dbus.enable = true;
   xdg.portal= {
     enable = true;
     # NOTE: use `xdg-desktop-portal-gtk` if GNOME
+    # wlr.enable = true;
+    # gtk portal needed to make gtk apps happy
     extraPortals = [ pkgs.xdg-desktop-portal-kde ];
   };
+
+  security.polkit.enable = true;
 
   # testing out programs or services
   services = {
