@@ -294,7 +294,13 @@ in
       unstable.cups-pdf-to-pdf
       #wine wine64 winetricks
       #playonlinux
-      unstable.lutris
+      (lutris.override {
+        extraPkgs = pkgs: [
+          # List package dependencies here
+          wineWowPackages.stable
+          winetricks
+        ];
+      })
       phoronix-test-suite
       starship # customize shell prompt
       dropbox
@@ -351,7 +357,11 @@ in
 
   # Enable Flatpak
   services.flatpak.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  xdg.portal= {
+    enable = true;
+    # NOTE: use `xdg-desktop-portal-gtk` if GNOME
+    extraPortals = [ pkgs.xdg-desktop-portal-kde ];
+  };
 
   # testing out programs or services
   services = {
