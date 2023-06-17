@@ -22,7 +22,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # Include Home Manager
+      # Include Home Manager - you must add the home manager channel with sudo
       <home-manager/nixos>
     ];
 
