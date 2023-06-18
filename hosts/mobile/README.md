@@ -6,6 +6,9 @@ If so, it can be called Mobile NixOS, oh wait, that already exists
 
 I hope to some day be able to do this...
 
+Matthew Croughan said his phone is built with NixOS in this talk:
+https://www.youtube.com/watch?v=6Le0IbPRzOE
+
 ## Videos
 https://www.youtube.com/watch?v=229PpjZZouw
 
