@@ -23,6 +23,9 @@ function collect-garbage {
 	sudo nix-collect-garbage -d
 }
 
+# Nix repl
+alias repl="nix repl '<nixpkgs>'"
+
 function mc {
 	# mark (p)cap $count
 	# this is for marking a pcap in wireshark
