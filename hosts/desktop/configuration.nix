@@ -253,12 +253,14 @@ in
     ];
     initialPassword = "adam";
     packages = with pkgs; [
+      # Custom playwright build
       #(runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
       #''
       #mkdir -p "$out/bin"
       #makeWrapper "${playwright}/bin/playwright" "$out/bin/playwright" \
       #  --set PLAYWRIGHT_BROWSERS_PATH "${playwright.browsers}"
       #'')
+
       flameshot # screenshots
       alsa-utils # audio management
       pavucontrol # pusleaudio control GUI
@@ -279,7 +281,6 @@ in
       keepass xdotool
       vscode
       vlc
-      #unstable.spotify # it thinks it is in offline mode maybe net isue
       #spotifyd # use the services.spotifyd.enable
       unstable.rambox
       agenda
@@ -297,11 +298,11 @@ in
       libsForQt5.kdenlive
 
       reaper
-      unstable.musescore
+
+      unstable.musescore # musescore 4
 
       unstable.cups-pdf-to-pdf
-      #wine wine64 winetricks
-      #playonlinux
+
       (lutris.override {
         extraPkgs = pkgs: [
           # List package dependencies here
@@ -398,31 +399,31 @@ in
   environment.systemPackages = with pkgs; [
     bat
     bottom # kewler than htop (use btm to run)
-    file
-    fd # required for nvim telescope
-    kitty # a better terminal emulator
-    man # make sure I have man pages available
-    links2 # CLI Web Browser
-    htop
-    git
-    gotop # vtop
-    gcc
-    qpwgraph
-    groff # fix for some --help outputs
-    ffmpeg
-    ranger
-    virt-manager
     clinfo # GPU extras
     exa
-    python3
-    pciutils # required for lspci,
+    fd # required for nvim telescope
+    ffmpeg
+    file
+    gcc
+    git
+    gotop # vtop
+    groff # fix for some --help outputs
+    htop
+    kitty # a better terminal emulator
+    links2 # CLI Web Browser
+    man # make sure I have man pages available
     nvtop # GPU
+    pciutils # required for lspci,
+    python3
+    qpwgraph
+    ranger
     ripgrep # required for nvim telescope live-grep
-    tree
     tldr
+    tree
+    unzip
+    virt-manager
     wget
     wireshark
-    unzip
     zip
   ];
 
