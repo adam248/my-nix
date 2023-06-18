@@ -323,7 +323,6 @@ in
       libreoffice
       youtube-dl
       unstable.carla # audio plugin manager
-      unstable.linvstmanager
       #airwave #<- broken, needs third-party install
       notepadqq
       gh # Github CLI tool
@@ -411,6 +410,7 @@ in
     htop
     kitty # a better terminal emulator
     links2 # CLI Web Browser
+    linvstmanager
     man # make sure I have man pages available
     nvtop # GPU
     pciutils # required for lspci,
