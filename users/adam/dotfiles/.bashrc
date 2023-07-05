@@ -10,6 +10,20 @@ alias hconfig='sudo vim /etc/nixos/hardware-configuration.nix'
 alias q='exit'
 alias cat='bat'
 
+# Quick Logs
+function log {
+	text=""
+	# collect input arguments
+	for var in "$@"
+	do
+		text+="$var "
+	done
+	# write out to file
+	current_date=`date +"%Y.%m.%d %H:%M:%S %Z"`
+	echo "$current_date| $text" >> ~/my.log
+}
+
+
 # Nix env
 function install {
 	nix-env -iA nixos.$1
