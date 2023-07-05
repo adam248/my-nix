@@ -157,10 +157,11 @@ in
         set number relativenumber
         set nu rnu
         set mouse=a
-	set cc=80
-	set list
+	    set cc=80
+	    set nolist
         set nohlsearch
         set nospell
+        set tabstop=4
         let g:onedark_config = {
           \ 'style': 'darker',
         \}
@@ -198,15 +199,15 @@ in
     };
   };
 
-
   # Sound Configuration
+  hardware.bluetooth.enable = true;
+
   # Remove sound.enable or turn it off if you had it set previously,
   # it seems to cause conflicts with pipewire
   # Basic
   #sound.enable = true;
   #hardware.pulseaudio.enable = true;
 
-  hardware.bluetooth.enable = true;
 
   # Pipewire
   # rtkit is optional but recommended  
@@ -261,8 +262,11 @@ in
       #  --set PLAYWRIGHT_BROWSERS_PATH "${playwright.browsers}"
       #'')
 
+      cutter ghidra # reverse engineering tools
+
       flameshot # screenshots
       alsa-utils # audio management
+      alsa-lib freetype
       pavucontrol # pusleaudio control GUI
 
       # network tools
@@ -297,7 +301,7 @@ in
       davinci-resolve
       libsForQt5.kdenlive
 
-      reaper
+      reaper surge-XT
 
       unstable.musescore # musescore 4
 
@@ -324,7 +328,7 @@ in
       youtube-dl
       unstable.carla # audio plugin manager
       #airwave #<- broken, needs third-party install
-      notepadqq
+      #notepadqq #<- broken
       gh # Github CLI tool
       libsForQt5.kcharselect
       discord
@@ -409,6 +413,7 @@ in
     groff # fix for some --help outputs
     htop
     kitty # a better terminal emulator
+    kup bup # KDE Backup tool & backup + version control
     links2 # CLI Web Browser
     linvstmanager
     man # make sure I have man pages available
@@ -418,13 +423,17 @@ in
     qpwgraph
     ranger
     ripgrep # required for nvim telescope live-grep
+    station # rambox competitor
     tldr
     tree
     unzip
     virt-manager
+    w3m
     wget
     wireshark
+    yabridge yabridgectl
     zip
+    zoom-us
   ];
 
   programs.tmux = {
