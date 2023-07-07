@@ -298,10 +298,10 @@ in
 
       krita
 
-      davinci-resolve
+      #davinci-resolve
       libsForQt5.kdenlive
 
-      reaper surge-XT
+      reaper 
 
       unstable.musescore # musescore 4
 
@@ -424,6 +424,7 @@ in
     ranger
     ripgrep # required for nvim telescope live-grep
     station # rambox competitor
+    surge surge-XT
     tldr
     tree
     unzip
@@ -463,6 +464,14 @@ in
     # required for Nixified AI's InvokeAI on AMD GPU
     HSA_OVERRIDE_GFX_VERSION = "10.3.0";   
   };
+  
+  environment.variables = {
+      DSSI_PATH   = "$HOME/.dssi:$HOME/.nix-profile/lib/dssi:/run/current-system/sw/lib/dssi";
+      LADSPA_PATH = "$HOME/.ladspa:$HOME/.nix-profile/lib/ladspa:/run/current-system/sw/lib/ladspa";
+      LV2_PATH    = "$HOME/.lv2:$HOME/.nix-profile/lib/lv2:/run/current-system/sw/lib/lv2";
+      LXVST_PATH  = "$HOME/.lxvst:$HOME/.nix-profile/lib/lxvst:/run/current-system/sw/lib/lxvst";
+      VST_PATH    = "$HOME/.vst:$HOME/.nix-profile/lib/vst:/run/current-system/sw/lib/vst";
+    };
 
   # Required Virt-manager Options
   virtualisation.libvirtd.enable = true;
