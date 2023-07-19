@@ -30,6 +30,11 @@ in
   # Install the latest Linux Kernel available
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Enable Scarlett 4i4
+  boot.extraModprobeConfig = ''
+    options snd_usb_audio vid=0x1235 pid=0x8212 device_setup=1
+  '';
+
   # Enable emulation of other OS systems &/ architechure
   #boot.binfmt.emulatedSystems = [ "x86_64-windows" ];
 
@@ -189,7 +194,7 @@ in
         start = [
           vim-floaterm
           onedark-nvim
-          vim-nix vim-lua
+          vim-nix vim-lua python-syntax
           telescope-nvim telescope-live-grep-args-nvim
           harpoon
           nvim-treesitter.withAllGrammars
@@ -276,7 +281,7 @@ in
       cutter ghidra # reverse engineering tools
 
       flameshot # screenshots
-      alsa-utils # audio management
+      alsa-utils alsa-scarlett-gui # audio management
       alsa-lib freetype
       pavucontrol # pusleaudio control GUI
 
