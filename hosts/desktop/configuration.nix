@@ -442,6 +442,7 @@ in
     station # rambox competitor
     surge surge-XT
     tldr
+    tigervnc
     tree
     unzip
     virt-manager
@@ -525,7 +526,7 @@ in
   system.copySystemConfiguration = true;
   system.autoUpgrade = {
     enable = true;
-    allowReboot = true;
+    allowReboot = false;
   };
 
   # This value determines the NixOS release from which the default
