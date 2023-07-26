@@ -1,1 +1,1 @@
-imports = [ "adam" ];
+imports = [ "./adam" ];
