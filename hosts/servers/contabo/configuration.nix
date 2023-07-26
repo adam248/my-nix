@@ -72,6 +72,8 @@
     #settings.PasswordAuthentication = false;
     #settings.KbdInteractiveAuthentication = false;
 
+    # Change this to no to disable root login via ssh
+    # Make sure to test that the user defined above is working first
     settings.PermitRootLogin = "yes";
   };
 
