@@ -349,7 +349,7 @@ in
       libsForQt5.kcharselect
       discord
       qbittorrent
-      unstable.exodus
+      #exodus
       trezor-suite
       trezor-udev-rules
       ffmpeg
@@ -451,7 +451,7 @@ in
     wireshark
     yabridge yabridgectl
     zip
-    zoom-us
+    #zoom-us # removed due to downloading file from chat issues
   ];
 
   programs.tmux = {
@@ -515,6 +515,7 @@ in
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 
     57621 # spotify local discovery
+    8080 # for testing web sites
   ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
