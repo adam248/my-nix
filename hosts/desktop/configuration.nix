@@ -157,7 +157,12 @@ in
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
+    package = pkgs.steam.override {
+      extraPkgs = ps: with ps; [pango harfbuzz libthai];
+    };
   };
+
+  
 
   # Enable Autojump
   programs.autojump.enable = true;
@@ -295,7 +300,7 @@ in
       qdirstat
       xclip # easy copy to clipboard from console
       firefox
-      unstable.google-chrome
+      google-chrome
       thunderbird
       element-desktop
       keepass xdotool
@@ -373,6 +378,8 @@ in
 
       rnix-lsp
       rust-analyzer
+
+      openrct2
     ];
   };
 
@@ -402,7 +409,7 @@ in
       enable = true;
     };
     grafana = {
-      enable = true;
+      enable = false;
       settings = {
         server = {
           http_addr = "127.0.0.1";
@@ -433,6 +440,7 @@ in
     links2 # CLI Web Browser
     linvstmanager
     man # make sure I have man pages available
+    multimarkdown # simple extended markdown to html converter
     nvtop # GPU
     pciutils # required for lspci,
     python3
@@ -549,6 +557,7 @@ in
     };
     permittedInsecurePackages = [
                 "openssl-1.1.1u"
+                "openssl-1.1.1v"
                 "python-2.7.18.6"
               ];
   };
