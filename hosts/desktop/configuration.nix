@@ -209,7 +209,6 @@ in
               config = ''
                   lua << EOF
                   require('lspconfig').rnix.setup{}
-                  require('lspconfig').pyright.setup{}
                   require('lspconfig').rust_analyzer.setup{}
                   require('lspconfig').tsserver.setup{}
                   EOF
@@ -252,7 +251,7 @@ in
   services.vaultwarden.enable = true;
 
   # Enable Docker
-  #virtualisation.docker.enable = true;
+  virtualisation.docker.enable = true;
 
   # Add .local/bin to PATH
   environment.localBinInPath = true;
@@ -271,7 +270,7 @@ in
     isNormalUser = true;
     extraGroups = [
       "wheel" "video" "audio" "networkmanager" "lp" "scanner" "libvirtd"
-      "wireshark"
+      "wireshark" "docker"
     ];
     initialPassword = "adam";
     packages = with pkgs; [
@@ -308,6 +307,7 @@ in
       vlc
       #spotifyd # use the services.spotifyd.enable
       unstable.rambox
+      signal-desktop
       agenda
       obsidian
 
@@ -373,6 +373,7 @@ in
       unstable.localsend
 
       unstable.kicad
+      unstable.turso-cli
 
       #unstable.freecad # free alt to Fusion360
 
@@ -380,6 +381,8 @@ in
       rust-analyzer
 
       openrct2
+
+      #ollama # Local ChatGPT https://www.youtube.com/watch?v=jib1wjgIaa4
     ];
   };
 
@@ -426,6 +429,7 @@ in
     bat
     bottom # kewler than htop (use btm to run)
     clinfo # GPU extras
+    docker-compose
     exa
     fd # required for nvim telescope
     ffmpeg
@@ -447,6 +451,7 @@ in
     qpwgraph
     ranger
     ripgrep # required for nvim telescope live-grep
+    spice # virt manager helper
     station # rambox competitor
     surge surge-XT
     tldr
@@ -556,9 +561,11 @@ in
       };
     };
     permittedInsecurePackages = [
+                "openssl-1.1.1w"
                 "openssl-1.1.1u"
                 "openssl-1.1.1v"
                 "python-2.7.18.6"
+                "electron-24.8.6"
               ];
   };
 
