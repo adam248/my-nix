@@ -274,7 +274,8 @@ in
     ];
     initialPassword = "adam";
     packages = with pkgs; [
-      # Custom playwright build
+      # Custom Packages
+      ## Playwright build
       #(runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
       #''
       #mkdir -p "$out/bin"
@@ -298,7 +299,7 @@ in
       lazygit
       qdirstat
       xclip # easy copy to clipboard from console
-      firefox
+      unstable.firefox
       google-chrome
       thunderbird
       element-desktop
@@ -370,8 +371,6 @@ in
 
       libsForQt5.kcalc
 
-      unstable.localsend
-
       unstable.kicad
       unstable.turso-cli
 
@@ -383,6 +382,8 @@ in
       openrct2
 
       #ollama # Local ChatGPT https://www.youtube.com/watch?v=jib1wjgIaa4
+
+      openttd
     ];
   };
 
@@ -408,17 +409,14 @@ in
 
   # testing out programs or services
   services = {
-    prometheus = {
+    netdata = {
       enable = true;
+      package = pkgs.unstable.netdataCloud;
     };
-    grafana = {
-      enable = false;
-      settings = {
-        server = {
-          http_addr = "127.0.0.1";
-          http_port = 3000;
-        };
-      };
+    portunus = {
+      enable = true;
+      port = 20000;
+      ldap.suffix="dc=example,dc=org";
     };
   };
 
@@ -444,6 +442,7 @@ in
     links2 # CLI Web Browser
     linvstmanager
     man # make sure I have man pages available
+    unstable.manix # A nix doc searcher written in Rust
     multimarkdown # simple extended markdown to html converter
     nvtop # GPU
     pciutils # required for lspci,
