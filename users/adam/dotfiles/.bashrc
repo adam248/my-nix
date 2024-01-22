@@ -23,6 +23,8 @@ function log {
 	echo "$current_date| $text" >> ~/my.log
 }
 
+# Stop Bitcoin Daemon
+alias stopb="sudo systemctl stop bitcoind-bitcoind"
 
 # Nix env
 function install {
@@ -183,3 +185,11 @@ function note {
 	echo "$@" >> $HOME/$drafts
 	echo "" >> $HOME/$drafts
 }
+
+#Repair NixOS
+alias repair='sudo nixos-rebuild switch --repair'
+
+#Verify Nix Store
+alias verify='sudo nix-store --verify --check-contents --repair'
+
+
