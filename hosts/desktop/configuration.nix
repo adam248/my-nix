@@ -2,14 +2,6 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-# Contents (Line Numbers)
-#
-# Background Services: 100
-# Neovim setup: 125
-# Sound setup: 165
-# Personal Programs: 222
-# System-Wide Programs: 300
-
 { config, pkgs, lib, ... }:
 
 let
@@ -34,13 +26,13 @@ let
     tmuxifier
     turso-cli # Cloud Edge Database with a free plan
   ];
+
 in
+
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      # Include Home Manager - uses home-manager channel (sudo)
-      <home-manager/nixos>
+  imports = [ 
+      ./hardware-configuration.nix # Include the results of the hardware scan.
+      <home-manager/nixos> # Include Home Manager - uses home-manager channel (sudo)
     ];
 
 
@@ -350,7 +342,6 @@ in
       transcribe
       trezor-suite trezor-udev-rules
       units
-      vlc
       vscode
       xclip # easy copy to clipboard from console
       youtube-dl
@@ -362,11 +353,11 @@ in
   home-manager.users."adam" = { pkgs, ... }: {
     home.stateVersion = "23.05";
     home.packages = with pkgs; [
-      typst
+      typst # Modern Markdown to PDF (Better than LaTeX)
     ];
   };
 
-  # Enable Flatpak
+  # Enable Flatpak and helper services
   services.flatpak.enable = true;
   services.dbus.enable = true;
   xdg.portal= {
@@ -422,6 +413,7 @@ in
     tree
     unzip
     virt-manager
+    vlc
     wget
     wireshark
     zip
@@ -488,7 +480,7 @@ in
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 
     57621 # spotify local discovery
-    8080 # for testing web sites
+    12345 # for testing dev web sites
   ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
