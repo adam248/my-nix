@@ -14,9 +14,26 @@
 
 let
   user = "adam"; # currently unused but if you want to use this variable do this: ${user}
+
   unstableTarball =
     fetchTarball
       "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
+
+  # Unstable packages to be installed with USER
+  unstable-pkgs = with pkgs.unstable; [ 
+    ardour # Reaper alternative 
+    decent-sampler # My very first nixpkgs contrib! Yay!
+    firefox
+    godot_4
+    google-chrome
+    kicad
+    ledger-live-desktop
+    musescore # musescore 4
+    onlyoffice-bin
+    rambox
+    tmuxifier
+    turso-cli # Cloud Edge Database with a free plan
+  ];
 in
 {
   imports =
@@ -29,14 +46,15 @@ in
 
   # Install the latest Linux Kernel available
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelParams = [
+    "video=card0-DP-1:2560x1440@144"
+    "video=card0-HDMI-A-1:2560x1440@60"
+  ];
 
-  # Enable Scarlett 4i4
+  # Enable Scarlett 4i4 for Linux
   boot.extraModprobeConfig = ''
     options snd_usb_audio vid=0x1235 pid=0x8212 device_setup=1
   '';
-
-  # Enable emulation of other OS systems &/ architechure
-  #boot.binfmt.emulatedSystems = [ "x86_64-windows" ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.efi.canTouchEfiVariables = true;
@@ -50,21 +68,25 @@ in
 
   # OpenCL (Extra GPU Stuff
   hardware.opengl.extraPackages = with pkgs; [
+    amdvlk
     rocm-opencl-icd
     rocm-opencl-runtime
-    amdvlk
   ];
 
+  hardware.opengl.enable = true;
   hardware.opengl.driSupport = true;
-  # Allow 32-bit programs
-  hardware.opengl.driSupport32Bit = true;
+  hardware.opengl.driSupport32Bit = true; # Allow 32-bit programs
 
   networking.hostName = "nxbx-dsktp"; # Define your hostname.
+
   # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # {
+  #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # or
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  # }
+
   networking.enableIPv6 = false;
-  #programs.wireshark.enable = true;
   networking.interfaces.enp74s0.ipv4.addresses = [
     {
       address = "192.168.1.42";
@@ -72,57 +94,70 @@ in
     }
   ];
   networking.defaultGateway = "192.168.1.1";
-  networking.nameservers = [ "8.8.8.8" "8.8.4.4" ];
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
 
   # Set your time zone.
   time.timeZone = "Australia/Darwin";
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
   # Set to Australia locale
   i18n.defaultLocale = "en_AU.UTF-8";
   console = {
     packages = [ pkgs.terminus_font ];
-    #font = "Lat2-Terminus16";
     font = "${pkgs.terminus_font}/share/consolefonts/ter-i32b.psf.gz";
     #keyMap = "us"; # is being declared elsewhere
     useXkbConfig = true; # use xkbOptions in tty.
   };
 
   services = {
+
+    bitcoind."bitcoind" = {
+      enable = false;
+      dataDir = "/data/bitcoin";
+      extraCmdlineOptions = [ 
+        "-maxuploadtarget=1024" # Max 1GB upload per day
+        "-maxconnections=25" # Max 25 Connections
+        "-blocksonly" # Relay only blocks
+        "-maxmempool=50" # Max mempool of 50MB
+        "-par=1" # Limit bitcoind to 1 thread
+        "-rpcthreads=1" # Limit bitcoind rpc api to 1 thread
+      ];
+      dbCache = 100; # Limit dbcache size to 100MB
+    };
+
+    ratbagd.enable = true; # HID configurator (Logitech mouse)
+    
+    plex = {
+      enable = true;
+      openFirewall = true;
+    };
+
     xserver = {
 
       # Enable the X11 windowing system.
+      # Wayland should be considered in the future
       enable = true;
 
       # Make sure to use AMD
       videoDrivers = [ "amdgpu" ];
 
       # Set display manager (login window)
-      # testing stability
-      #displayManager.lightdm.enable = true;
-      # Using Plasma by default
       displayManager.sddm.enable = true;
       displayManager.sddm.autoNumlock = true;
+
+      # Enable autologin for a USER
       displayManager.autoLogin.enable = true;
       displayManager.autoLogin.user = "adam";
 
-      # Set desktop manager (full environment)
+      # Set a DE
       desktopManager.plasma5.enable = true;
-
-      # Set window manager (tiling or such)
-      # testing stability
-      #windowManager.awesome.enable = true;
     };
   };
 
+  # Turn On Numlock for all ttys with systemd 
+  # It is a good idea to enable Numlock on Login in the DE (KDE) as well
   systemd.services.numLockOnTty = {
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      # /run/current-system/sw/bin/setleds -D +num < "$tty";
       ExecStart = lib.mkForce (pkgs.writeShellScript "numLockOnTty" ''
         for tty in /dev/tty{1..6}; do
             ${pkgs.kbd}/bin/setleds -D +num < "$tty";
@@ -131,12 +166,15 @@ in
       };
   };
 
-  # Configure keymap in X11
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = {
-  #   "eurosign:e";
-  #   "caps:escape" # map caps to escape.
-  # };
+  # This is a Hello world systemd service written in bash
+  #systemd.services.pointless = {
+  #  serviceConfig = {
+  #    ExecStart = "/home/adam/code/bash/systemd/pointless.sh";
+  #    Restart="always";
+  #    User = "adam";
+  #    Type = "exec";
+  #  };
+  #};
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -146,23 +184,18 @@ in
   # Enable teamviewer
   services.teamviewer.enable = true;
 
-  # Enable file syncing with Syncthing
-  #services.syncthing.enable = true;
-
   # Enable KDEConnect
   programs.kdeconnect.enable = true;
 
   # Enable steam
   programs.steam = {
     enable = true;
-    remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
+    remotePlay.openFirewall = true;
     package = pkgs.steam.override {
       extraPkgs = ps: with ps; [pango harfbuzz libthai];
     };
   };
-
-  
 
   # Enable Autojump
   programs.autojump.enable = true;
@@ -222,13 +255,6 @@ in
   # Sound Configuration
   hardware.bluetooth.enable = true;
 
-  # Remove sound.enable or turn it off if you had it set previously,
-  # it seems to cause conflicts with pipewire
-  # Basic
-  #sound.enable = true;
-  #hardware.pulseaudio.enable = true;
-
-
   # Pipewire
   # rtkit is optional but recommended  
   security.rtkit.enable = true;
@@ -244,14 +270,8 @@ in
   # Enable XBox controllers
   hardware.xpadneo.enable = true;
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  # Enable VaultWarden
-  services.vaultwarden.enable = true;
-
-  # Enable Docker
-  virtualisation.docker.enable = true;
+  # Enable Ledger Device
+  hardware.ledger.enable = true;
 
   # Add .local/bin to PATH
   environment.localBinInPath = true;
@@ -262,8 +282,6 @@ in
   # Run Trezor Service
   services.trezord.enable = true;
 
-  # Enable Ledger Device
-  hardware.ledger.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."adam" = {
@@ -275,60 +293,7 @@ in
     initialPassword = "adam";
     packages = with pkgs; [
       # Custom Packages
-      ## Playwright build
-      #(runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
-      #''
-      #mkdir -p "$out/bin"
-      #makeWrapper "${playwright}/bin/playwright" "$out/bin/playwright" \
-      #  --set PLAYWRIGHT_BROWSERS_PATH "${playwright.browsers}"
-      #'')
-
-      cutter ghidra # reverse engineering tools
-
-      flameshot # screenshots
-      alsa-utils alsa-scarlett-gui # audio management
-      alsa-lib freetype
-      pavucontrol # pusleaudio control GUI
-
-      # network tools
-      ethtool
-      iperf
-      dig # enables nsloopup for DNS checking
-
-      github-desktop
-      lazygit
-      qdirstat
-      xclip # easy copy to clipboard from console
-      unstable.firefox
-      google-chrome
-      thunderbird
-      element-desktop
-      keepass xdotool
-      vscode
-      vlc
-      #spotifyd # use the services.spotifyd.enable
-      unstable.rambox
-      signal-desktop
-      agenda
-      obsidian
-
-      gimp
-      audacity
-      blender
-      unstable.godot_4
-      obs-studio
-
-      krita
-
-      #davinci-resolve
-      libsForQt5.kdenlive
-
-      reaper 
-
-      unstable.musescore # musescore 4
-
-      unstable.cups-pdf-to-pdf
-
+      ## Lutris Override
       (lutris.override {
         extraPkgs = pkgs: [
           # List package dependencies here
@@ -336,56 +301,63 @@ in
           winetricks
         ];
       })
-      phoronix-test-suite
-      starship # customize shell prompt
-      dropbox
-      libsForQt5.kalendar
-      bottles # Wineprefix manager
-      neofetch
-      inkscape
-      imagemagick
-      unstable.onlyoffice-bin
-      scribus
-      libreoffice
-      youtube-dl
-      unstable.carla # audio plugin manager
-      #airwave #<- broken, needs third-party install
-      #notepadqq #<- broken
-      gh # Github CLI tool
-      libsForQt5.kcharselect
-      discord
-      qbittorrent
-      #exodus
-      trezor-suite
-      trezor-udev-rules
-      ffmpeg
-      imagemagick
-      unstable.ledger-live-desktop
-      vmpk # Virtual MIDI Piano Keyboard
-      electrum
-      qsynth # Audio Synth Emulator
-      guitarix # Guitar Amp Emulator
+
+      ## Playwright CLI build
+      #(runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
+      #''
+      #mkdir -p "$out/bin"
+      #makeWrapper "${playwright}/bin/playwright" "$out/bin/playwright" \
+      #  --set PLAYWRIGHT_BROWSERS_PATH "${playwright.browsers}"
+      #'')
+
+
+      # Stable Packages
+      alsa-lib freetype
+      alsa-utils alsa-scarlett-gui # audio management
+      audacity
       authy
-      unstable.ardour
-      units
-
+      blender
+      dropbox
+      element-desktop
+      flameshot # screenshots
+      gh # Github CLI tool
+      gimp
+      github-desktop
+      guitarix # Guitar Amp Emulator
+      imagemagick
+      inkscape
+      keepass xdotool
+      krita
+      lazygit
+      libreoffice
       libsForQt5.kcalc
-
-      unstable.kicad
-      unstable.turso-cli
-
-      #unstable.freecad # free alt to Fusion360
-
+      libsForQt5.kcharselect
+      libsForQt5.kdenlive
+      neofetch
+      obs-studio
+      obsidian
+      openttd
+      oh-my-git
+      piper # for my Logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
+      qbittorrent
+      qdirstat
+      reaper 
       rnix-lsp
       rust-analyzer
+      scribus # OSS Alt for Publisher / InDesign / Affinity Designer
+      starship # customize shell prompt
+      thunderbird
+      transcribe
+      trezor-suite trezor-udev-rules
+      units
+      vlc
+      vscode
+      xclip # easy copy to clipboard from console
+      youtube-dl
 
-      openrct2
-
-      #ollama # Local ChatGPT https://www.youtube.com/watch?v=jib1wjgIaa4
-
-      openttd
-    ];
+    ] ++ unstable-pkgs;
   };
+
 
   home-manager.users."adam" = { pkgs, ... }: {
     home.stateVersion = "23.05";
@@ -405,19 +377,24 @@ in
     extraPortals = [ pkgs.xdg-desktop-portal-kde ];
   };
 
+  # Enable auto sudo requests for supported apps
   security.polkit.enable = true;
 
   # testing out programs or services
   services = {
-    netdata = {
-      enable = true;
-      package = pkgs.unstable.netdataCloud;
-    };
-    portunus = {
-      enable = true;
-      port = 20000;
-      ldap.suffix="dc=example,dc=org";
-    };
+
+    # Netdata: Web-based System Monitoring App
+    #netdata = {
+    #  enable = true;
+    #  package = pkgs.unstable.netdataCloud;
+    #};
+
+    # Web-based LDAP manager
+    #portunus = { 
+    #  enable = true;
+    #  port = 20000;
+    #  ldap.suffix="dc=example,dc=org";
+    #};
   };
 
   # List packages installed in system profile. To search, run:
@@ -426,44 +403,28 @@ in
   environment.systemPackages = with pkgs; [
     bat
     bottom # kewler than htop (use btm to run)
-    clinfo # GPU extras
-    docker-compose
-    exa
     fd # required for nvim telescope
     ffmpeg
     file
     gcc
     git
-    gotop # vtop
     groff # fix for some --help outputs
     htop
     kitty # a better terminal emulator
     kup bup # KDE Backup tool & backup + version control
-    links2 # CLI Web Browser
-    linvstmanager
     man # make sure I have man pages available
-    unstable.manix # A nix doc searcher written in Rust
-    multimarkdown # simple extended markdown to html converter
-    nvtop # GPU
-    pciutils # required for lspci,
     python3
     qpwgraph
     ranger
     ripgrep # required for nvim telescope live-grep
     spice # virt manager helper
-    station # rambox competitor
-    surge surge-XT
     tldr
-    tigervnc
     tree
     unzip
     virt-manager
-    w3m
     wget
     wireshark
-    yabridge yabridgectl
     zip
-    #zoom-us # removed due to downloading file from chat issues
   ];
 
   programs.tmux = {
