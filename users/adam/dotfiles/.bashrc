@@ -23,8 +23,11 @@ function log {
 	echo "$current_date| $text" >> ~/my.log
 }
 
-# Stop Bitcoin Daemon
-alias stopb="sudo systemctl stop bitcoind-bitcoind"
+# Bitcoin Systemd shortcut
+# Eg. bitcoin start | stop | status
+function bitcoin {
+		sudo systemctl $1 bitcoind-bitcoind
+}
 
 # Nix env
 function install {
