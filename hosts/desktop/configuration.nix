@@ -244,10 +244,18 @@ in
     };
   };
 
-  # Sound Configuration
-  hardware.bluetooth.enable = true;
+  # Bluetooth Configuration
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Experimental = true;
+      };
+    };
+  };
 
-  # Pipewire
+  # Sound (Pipewire) configuration
   # rtkit is optional but recommended  
   security.rtkit.enable = true;
   services.pipewire = {
@@ -479,8 +487,8 @@ in
 
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 
+    80 # for testing dev web sites
     57621 # spotify local discovery
-    12345 # for testing dev web sites
   ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
