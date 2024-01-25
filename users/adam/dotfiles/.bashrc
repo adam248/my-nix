@@ -26,7 +26,11 @@ function log {
 # Bitcoin Systemd shortcut
 # Eg. bitcoin start | stop | status
 function bitcoin {
-		sudo systemctl $1 bitcoind-bitcoind
+		if [ "$1" = "status" ]; then
+				systemctl $1 bitcoind-bitcoind
+		else
+				sudo systemctl $1 bitcoind-bitcoind
+		fi
 }
 
 # Nix env
