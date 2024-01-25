@@ -71,6 +71,11 @@ in
 
   networking.hostName = "nxbx-dsktp"; # Define your hostname.
 
+  # etc/hosts
+  networking.extraHosts = ''
+    127.0.0.1:1234 test
+  '';
+
   # Pick only one of the below networking options.
   # {
   #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -102,6 +107,25 @@ in
 
   services = {
 
+    ## media server setup notes
+    # prowlarr.enable = true; # Jackett replacment
+    # prowlarr works with all the following
+    # Lidarr (music), Mylar3 (comics), 
+    # Radarr (movies), Readarr (books), Sonarr (tv)
+    # Readarr works with Calibre
+    # All above work with plex
+    # https://openaudible.org/ for Audible backup and downloads of audio books
+    # Audiobooks in Calibre can be done by adding the audiobook to a zip file
+    # then putting the zip file in the Calibre book folder
+    # then you get to see the book cover and download the zip file to listen
+    # https://github.com/seblucas/cops OPDS server
+    # Kavita might be a good Calibre alternative
+    # Maybe Jellyfin is best as it could replace plex and calibre???
+    # Jellyfin does books and comics!
+    # Jellyfin is a fork of emby...
+
+    fstrim.enable = true; # for auto trim of ssds drives
+
     bitcoind."bitcoind" = {
       enable = false;
       dataDir = "/data/bitcoin";
@@ -116,11 +140,12 @@ in
       dbCache = 100; # Limit dbcache size to 100MB
     };
 
-    ratbagd.enable = true; # HID configurator (Logitech mouse)
+    ratbagd.enable = true; # HID configurator (Logitech mouse) use piper GUI
     
     plex = {
       enable = true;
       openFirewall = true;
+      package = pkgs.unstable.plex;
     };
 
     xserver = {
@@ -310,6 +335,9 @@ in
       #  --set PLAYWRIGHT_BROWSERS_PATH "${playwright.browsers}"
       #'')
 
+      # this needs a wrapper to run `plasma-discover --backends flathub`
+      #libsForQt5.discover
+
 
       # Stable Packages
       alsa-lib freetype
@@ -402,6 +430,7 @@ in
   environment.systemPackages = with pkgs; [
     bat
     bottom # kewler than htop (use btm to run)
+    exa # ls replacement
     fd # required for nvim telescope
     ffmpeg
     file
@@ -419,6 +448,7 @@ in
     spice # virt manager helper
     tldr
     tree
+    trickle
     unzip
     virt-manager
     vlc
@@ -487,7 +517,7 @@ in
 
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 
-    80 # for testing dev web sites
+    1234 # for testing dev web sites
     57621 # spotify local discovery
   ];
   # networking.firewall.allowedUDPPorts = [ ... ];
