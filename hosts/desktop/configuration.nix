@@ -16,15 +16,19 @@ let
     ardour # Reaper alternative 
     decent-sampler # My very first nixpkgs contrib! Yay!
     firefox
+    freecad
     godot_4
     google-chrome
+    kdePackages.kalarm
     kicad
     ledger-live-desktop
     musescore # musescore 4
     onlyoffice-bin
+    #pika-backup # simple backup software deduplicated backups
     rambox
     tmuxifier
     turso-cli # Cloud Edge Database with a free plan
+    #waydroid #need wayland and see the waydroid nix wiki page for more information
   ];
 
 in
@@ -37,11 +41,18 @@ in
 
 
   # Install the latest Linux Kernel available
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelParams = [
-    "video=card0-DP-1:2560x1440@144"
-    "video=card0-HDMI-A-1:2560x1440@60"
-  ];
+  # If nothing is specified then the LTS kernal for the current NixOS release is installed
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest; # using unstable due to amdgpu boot issue
+  # If mulit--monitor setup is having issues...
+  #boot.kernelParams = [
+  #  "video=card0-DP-1:2560x1440@144"
+  #  "video=card0-HDMI-A-1:2560x1440@60"
+  #];
+
+  # set vm.max_map_count for better game experience
+  boot.kernel.sysctl = {
+    "vm.max_map_count" = 2147483642; # value the same as Steam Deck
+  };
 
   # Enable Scarlett 4i4 for Linux
   boot.extraModprobeConfig = ''
@@ -84,17 +95,17 @@ in
   # }
 
   networking.enableIPv6 = false;
-  networking.interfaces.enp74s0.ipv4.addresses = [
-    {
-      address = "192.168.1.42";
-      prefixLength = 24;
-    }
-  ];
+  #networking.interfaces.enp74s0.ipv4.addresses = [
+  #  {
+  #    address = "192.168.1.42";
+  #    prefixLength = 24;
+  #  }
+  #];
   networking.defaultGateway = "192.168.1.1";
   networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
 
   # Set your time zone.
-  time.timeZone = "Australia/Darwin";
+  time.timeZone = "Australia/Perth";
 
   # Set to Australia locale
   i18n.defaultLocale = "en_AU.UTF-8";
@@ -213,6 +224,8 @@ in
       extraPkgs = ps: with ps; [pango harfbuzz libthai];
     };
   };
+
+  programs.gamemode.enable = true;
 
   # Enable Autojump
   programs.autojump.enable = true;
@@ -351,7 +364,9 @@ in
       gh # Github CLI tool
       gimp
       github-desktop
+      gnuradio
       guitarix # Guitar Amp Emulator
+      handbrake
       imagemagick
       inkscape
       keepass xdotool
@@ -380,7 +395,16 @@ in
       units
       vscode
       xclip # easy copy to clipboard from console
-      youtube-dl
+      yt-dlp
+
+      # ASIC Design Software - https://www.youtube.com/watch?v=Eu_crbcBdNM
+
+      #magic-vlsi # VLSI layout tool written in Tcl
+      #ngspice # The Next Generation Spice (Electronic Circuit Simulator)
+      #xschem #  Schematic capture and netlisting EDA tool
+
+      # Laser cutter/engraving tool
+      #lightburn # Layout, editing, and control software for your laser cutter
 
     ] ++ unstable-pkgs;
   };
@@ -430,12 +454,14 @@ in
   environment.systemPackages = with pkgs; [
     bat
     bottom # kewler than htop (use btm to run)
+    #easyeffects # audio effects for pipewire audio
     exa # ls replacement
     fd # required for nvim telescope
     ffmpeg
     file
+    fzf
     gcc
-    git
+    git git-lfs
     groff # fix for some --help outputs
     htop
     kitty # a better terminal emulator
