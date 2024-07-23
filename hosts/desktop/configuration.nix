@@ -15,20 +15,27 @@ let
   unstable-pkgs = with pkgs.unstable; [ 
     ardour # Reaper alternative 
     decent-sampler # My very first nixpkgs contrib! Yay!
-    firefox
-    freecad
-    godot_4
+    #freecad
     google-chrome
-    kdePackages.kalarm
-    kicad
+    gpu-screen-recorder
+    gpu-screen-recorder-gtk
+    keymapp # moonlander keyboard flashing tool
+    #kicad
     ledger-live-desktop
+    mpv
     musescore # musescore 4
     onlyoffice-bin
     #pika-backup # simple backup software deduplicated backups
     rambox
     tmuxifier
-    turso-cli # Cloud Edge Database with a free plan
     #waydroid #need wayland and see the waydroid nix wiki page for more information
+  ];
+
+  kde-packages = with pkgs.unstable.kdePackages; [
+    kalarm
+    kcalc
+    kcharselect
+    kdenlive
   ];
 
 in
@@ -82,27 +89,12 @@ in
 
   networking.hostName = "nxbx-dsktp"; # Define your hostname.
 
-  # etc/hosts
-  networking.extraHosts = ''
-    127.0.0.1:1234 test
-  '';
-
   # Pick only one of the below networking options.
   # {
   #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   # or
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
   # }
-
-  networking.enableIPv6 = false;
-  #networking.interfaces.enp74s0.ipv4.addresses = [
-  #  {
-  #    address = "192.168.1.42";
-  #    prefixLength = 24;
-  #  }
-  #];
-  networking.defaultGateway = "192.168.1.1";
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
 
   # Set your time zone.
   time.timeZone = "Australia/Perth";
@@ -154,10 +146,27 @@ in
     ratbagd.enable = true; # HID configurator (Logitech mouse) use piper GUI
     
     plex = {
-      enable = true;
+      enable = false; # come on ... get a plex server setup already!!!
       openFirewall = true;
       package = pkgs.unstable.plex;
     };
+
+    displayManager = {
+      # Set display manager (login window)
+      sddm.enable = true;
+      sddm.autoNumlock = true;
+
+      # Enable autologin for a USER
+      #autoLogin.enable = true;
+      #autoLogin.user = "adam";
+
+      # plasma 6 on xserver
+      defaultSession = "plasmax11";
+
+    };
+
+    # Set a DE (plasma 6+)
+    desktopManager.plasma6.enable = true;
 
     xserver = {
 
@@ -168,16 +177,10 @@ in
       # Make sure to use AMD
       videoDrivers = [ "amdgpu" ];
 
-      # Set display manager (login window)
-      displayManager.sddm.enable = true;
-      displayManager.sddm.autoNumlock = true;
+      # Set a DE (plasma 5)
+      #desktopManager.plasma5.enable = true;
 
-      # Enable autologin for a USER
-      displayManager.autoLogin.enable = true;
-      displayManager.autoLogin.user = "adam";
 
-      # Set a DE
-      desktopManager.plasma5.enable = true;
     };
   };
 
@@ -215,6 +218,9 @@ in
   # Enable KDEConnect
   programs.kdeconnect.enable = true;
 
+  # Enable Firefox
+  programs.firefox.enable = true;
+
   # Enable steam
   programs.steam = {
     enable = true;
@@ -246,6 +252,7 @@ in
         set nohlsearch
         set nospell
         set tabstop=4
+        set shiftwidth=4
         let g:onedark_config = {
           \ 'style': 'darker',
         \}
@@ -262,16 +269,17 @@ in
         start = [
           vim-floaterm
           onedark-nvim
-          vim-nix vim-lua python-syntax
+          vim-nix vim-lua 
+          python-syntax
           telescope-nvim telescope-live-grep-args-nvim
           harpoon
           nvim-treesitter.withAllGrammars
           fugitive
+          nvim-lint
           {
               plugin = nvim-lspconfig;
               config = ''
                   lua << EOF
-                  require('lspconfig').rnix.setup{}
                   require('lspconfig').rust_analyzer.setup{}
                   require('lspconfig').tsserver.setup{}
                   EOF
@@ -307,6 +315,9 @@ in
 
   # Enable XBox controllers
   hardware.xpadneo.enable = true;
+
+  # Enable ZSA Moonlander udev rules and such
+  hardware.keyboard.zsa.enable = true;
 
   # Enable Ledger Device
   hardware.ledger.enable = true;
@@ -356,7 +367,7 @@ in
       alsa-lib freetype
       alsa-utils alsa-scarlett-gui # audio management
       audacity
-      authy
+      #authy
       blender
       dropbox
       element-desktop
@@ -373,19 +384,15 @@ in
       krita
       lazygit
       libreoffice
-      libsForQt5.kcalc
-      libsForQt5.kcharselect
-      libsForQt5.kdenlive
       neofetch
       obs-studio
       obsidian
       openttd
       oh-my-git
-      piper # for my Logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
+      piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
       qbittorrent
       qdirstat
       reaper 
-      rnix-lsp
       rust-analyzer
       scribus # OSS Alt for Publisher / InDesign / Affinity Designer
       starship # customize shell prompt
@@ -406,7 +413,7 @@ in
       # Laser cutter/engraving tool
       #lightburn # Layout, editing, and control software for your laser cutter
 
-    ] ++ unstable-pkgs;
+    ] ++ unstable-pkgs ++ kde-packages;
   };
 
 
@@ -453,9 +460,10 @@ in
   # Available to all users (including root)
   environment.systemPackages = with pkgs; [
     bat
-    bottom # kewler than htop (use btm to run)
+    #bottom # kewler than htop (use btm to run)
+    btop # better than btm
     #easyeffects # audio effects for pipewire audio
-    exa # ls replacement
+    eza #exa replacement # ls replacement
     fd # required for nvim telescope
     ffmpeg
     file
@@ -463,11 +471,11 @@ in
     gcc
     git git-lfs
     groff # fix for some --help outputs
-    htop
+    #htop
     kitty # a better terminal emulator
     kup bup # KDE Backup tool & backup + version control
     man # make sure I have man pages available
-    python3
+    #python3 --disabled due to build error
     qpwgraph
     ranger
     ripgrep # required for nvim telescope live-grep
@@ -479,7 +487,7 @@ in
     virt-manager
     vlc
     wget
-    wireshark
+    #wireshark --uninstalled as I don't use too often
     zip
   ];
 
@@ -524,7 +532,7 @@ in
   programs.dconf.enable = true;
 
   # Install custom fonts
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     nerdfonts
   ];
 
