@@ -10,6 +10,8 @@ alias hconfig='sudo vim /etc/nixos/hardware-configuration.nix'
 alias q='exit'
 alias cat='bat'
 
+alias ns='nix-shell'
+
 # Nix env
 function install {
 	nix-env -iA nixos.$1
