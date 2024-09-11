@@ -15,8 +15,9 @@ let
   unstable-pkgs = with pkgs.unstable; [ 
     ardour # Reaper alternative 
     decent-sampler # My very first nixpkgs contrib! Yay!
+    discord
     #freecad
-    google-chrome
+    #google-chrome
     gpu-screen-recorder
     gpu-screen-recorder-gtk
     keymapp # moonlander keyboard flashing tool
@@ -26,8 +27,9 @@ let
     musescore # musescore 4
     onlyoffice-bin
     #pika-backup # simple backup software deduplicated backups
-    rambox
+    #rambox
     tmuxifier
+    varia
     #waydroid #need wayland and see the waydroid nix wiki page for more information
   ];
 
@@ -58,8 +60,23 @@ in
 
   # set vm.max_map_count for better game experience
   boot.kernel.sysctl = {
-    "vm.max_map_count" = 2147483642; # value the same as Steam Deck
+    #"vm.max_map_count" = 1048576; # default value
+    "vm.max_map_count" = 16777216; # value for Star Citizen
+    #"vm.max_map_count" = 2147483642; # value the same as Steam Deck
+    "fs.file-max" = 524288; # recommended from star citizen guide
   };
+
+  # SWAP is needed for Star Citizen
+  swapDevices = [{
+    device = "/var/lib/swapfile";
+    size = 16 * 1024; # 16 GB
+  }];
+
+  # ZRAM is recommended for star citizen nixos guide
+  zramSwap = { 
+    enable = true; 
+    memoryMax = 16 * 1024 * 1024 * 1024; # 16 GB ZRAM
+  }; 
 
   # Enable Scarlett 4i4 for Linux
   boot.extraModprobeConfig = ''
@@ -95,6 +112,7 @@ in
   # or
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
   # }
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
 
   # Set your time zone.
   time.timeZone = "Australia/Perth";
@@ -157,8 +175,8 @@ in
       sddm.autoNumlock = true;
 
       # Enable autologin for a USER
-      #autoLogin.enable = true;
-      #autoLogin.user = "adam";
+      autoLogin.enable = true;
+      autoLogin.user = "adam";
 
       # plasma 6 on xserver
       defaultSession = "plasmax11";
@@ -313,7 +331,7 @@ in
     jack.enable = true;
   };
 
-  # Enable XBox controllers
+  # Enable XBox xbox controllers
   hardware.xpadneo.enable = true;
 
   # Enable ZSA Moonlander udev rules and such
@@ -376,6 +394,7 @@ in
       gimp
       github-desktop
       gnuradio
+      google-chrome
       guitarix # Guitar Amp Emulator
       handbrake
       imagemagick
@@ -595,6 +614,11 @@ in
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.auto-optimise-store = true;
+
+  nix.settings = {
+    substituters = [ "https://nix-citizen.cachix.org" ];
+    trusted-public-keys = [ "nix-citizen.cachix.org-1:lPMkWc2X8XD4/7YPEEwXKKBg+SVbYTVrAaLA2wQTKCo=" ];
+  };
 
   # Automate Nix garbage collection
   nix.gc = {
