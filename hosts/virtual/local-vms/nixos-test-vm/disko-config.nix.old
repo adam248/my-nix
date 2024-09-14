@@ -40,14 +40,9 @@
 	    data1 = {
 	      size = "100%";
 	      content = {
-	        type = "btrfs";
-		extraArgs = [ "-f" ]; # Override existing partition
-		subvolumes = {
-		  "/data1" = {
-		    mountOptions = [ "compress=zstd" ];
-		    mountpoint = "/disk-pool/data1";
-		  };
-		};
+	        type = "filesystem";
+		format = "ext4";
+		mountpoint = "/disk-pool/data1";
 	      };
 	    };
 	  };
@@ -62,14 +57,9 @@
 	    data2 = {
 	      size = "100%";
 	      content = {
-	        type = "btrfs";
-		extraArgs = [ "-f" ]; # Override existing partition
-		subvolumes = {
-		  "/data2" = {
-		    mountOptions = [ "compress=zstd" ];
-		    mountpoint = "/disk-pool/data2";
-		  };
-	        };
+	        type = "filesystem";
+		format = "ext4";
+		mountpoint = "/disk-pool/data2";
 	      };
 	    };
 	  };
@@ -84,18 +74,9 @@
 	    data3 = {
 	      size = "100%";
 	      content = {
-	        type = "btrfs";
-		extraArgs = [ "-f" ]; # Override existing partition
-		subvolumes = {
-		  "/data3" = {
-		    mountOptions = [ "compress=zstd" ];
-		    mountpoint = "/disk-pool/data3";
-		  };
-		  "/data4" = {
-		    mountOptions = [ "compress=zstd" ];
-		    mountpoint = "/disk-pool/data4";
-		  };
-		};
+	        type = "filesystem";
+		format = "ext4";
+		mountpoint = "/disk-pool/data3";
 	      };
 	    };
 	  };
