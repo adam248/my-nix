@@ -20,7 +20,6 @@ let
     #google-chrome
     gpu-screen-recorder
     gpu-screen-recorder-gtk
-    keymapp # moonlander keyboard flashing tool
     #kicad
     ledger-live-desktop
     mpv
@@ -28,6 +27,7 @@ let
     onlyoffice-bin
     #pika-backup # simple backup software deduplicated backups
     #rambox
+    telegram-desktop
     tmuxifier
     varia
     #waydroid #need wayland and see the waydroid nix wiki page for more information
@@ -400,6 +400,7 @@ in
       imagemagick
       inkscape
       keepass xdotool
+      keymapp # moonlander ZSA app
       krita
       lazygit
       libreoffice
