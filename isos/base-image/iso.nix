@@ -17,11 +17,11 @@
   environment.systemPackages = with pkgs; [ 
     disko
     git
+    mergerfs
     neofetch
     neovim 
     stress
     tldr
-    mergerfs
   ];
 
   systemd.services = {
