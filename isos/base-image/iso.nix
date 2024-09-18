@@ -10,8 +10,8 @@
 
   # include common wifi driver used by Macs and (Asus AC68 card need to confirm)
   nixpkgs.config.allowUnfree = true;
-  boot.initrd.kernelModules = [ "wl" ];
-  boot.kernelModules = [ "wl" ];
+  boot.initrd.kernelModules = [ "wl" "rtl8812au" "8812au" ];
+  boot.kernelModules = [ "wl" "rtl8812au" "8812au" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
 
   environment.systemPackages = with pkgs; [ 
