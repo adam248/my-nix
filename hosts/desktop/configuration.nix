@@ -387,6 +387,7 @@ in
       audacity
       #authy
       blender
+      brave
       dropbox
       element-desktop
       flameshot # screenshots
@@ -490,6 +491,7 @@ in
     fzf
     gcc
     git git-lfs
+    gparted
     groff # fix for some --help outputs
     #htop
     kitty # a better terminal emulator
