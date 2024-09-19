@@ -10,6 +10,7 @@ It will also be a NAS.
 
 ## Services
 
+- Scrutiny (webui for hard drive health monitoring)
 - Plex
 - Samba
 - Vaultwardan (or a good password manager)
