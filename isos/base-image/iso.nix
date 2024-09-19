@@ -8,7 +8,7 @@
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
   ];
 
-  # include common wifi driver used by Macs and (Asus AC68 card need to confirm)
+  # include common wifi drivers used by Macs and (Asus AC68 card need to confirm)
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "wl" ];
   boot.kernelModules = [ "wl" "rtl8812au" ];
@@ -51,5 +51,7 @@
 #       this will work behind a NAT as well and remote machines that do not have public ips 
 #       or a lack of port forwarding or anywhere you don't control the network
 
-  isoImage.squashfsCompression = "lz4";
+  
+  # the default is: "xz -Xdict-size 100%"
+  #isoImage.squashfsCompression = "lz4"; # Turn off compression (a smaller write to USB is prefered)
 }
