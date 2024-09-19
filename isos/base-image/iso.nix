@@ -54,6 +54,9 @@
     # use eth0 network naming format
     usePredictableInterfaceNames = false; # don't need predictable names when installing from live cd
 
+    # turn off firewall to allow easy discovery on a network
+    firewall.enable = false;
+
     # set installer default ip
     #interfaces.eth0.ipv4.addresses = [{
     #    address = "192.168.0.33";

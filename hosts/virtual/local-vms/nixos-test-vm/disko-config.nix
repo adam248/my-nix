@@ -3,24 +3,34 @@
     disk = {
       main = {
         type = "disk";
-	device = "/dev/vda";
+		device = "/dev/vda";
         content = {
           type = "gpt";
           partitions = {
-            boot = {
+            bios = { # MBR for legacy bios boot
               size = "1M";
-              type = "EF02"; # for grub MBR
+              type = "EF02"; 
             };
-            ESP = {
-              size = "512M";
-              type = "EF00";
-              content = {
+            efi = { # for UEFI booting
+              size = "200M";
+              type = "EF00";               
+			  content = {
                 type = "filesystem";
                 format = "vfat";
-                mountpoint = "/boot";
+                mountpoint = "/boot/efi"; # boot.loader.efi.efiSysMountPoint = "/boot/efi";
+				mountOptions = [ "ro" ]; # read-only to stop accidental modifications
               };
             };
-            root = {
+			boot = { # linux boot partition
+				size = "1G";
+				type = "EF03";
+				content = {
+					type = "filesystem";
+					format = "ext4";
+					mountpoint = "/boot"
+				};
+			};
+            root = { # linux OS partition
               size = "100%";
               content = {
                 type = "filesystem";
