@@ -22,11 +22,13 @@
     git
     mergerfs
     neofetch
-    neovim 
-    stress
+    neovim
+    stress      # stress testing cpu, memory, and IO 
     tldr
+    tmux        # for reading the manual and editing the config at the same time
   ];
 
+  # enable root ssh access on install
   systemd.services = {
     sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
   };
@@ -43,6 +45,11 @@
 #    defaultGateway = "192.168.0.1";
 #    nameservers = [ "1.1.1.1" "8.8.8.8" ];
 #  };
+
+# TODO: add wireguard vpn autoconnection setup (need server first)
+#       this will allow for easy network-based installation (no more finding a monitor & keyboard)
+#       this will work behind a NAT as well and remote machines that do not have public ips 
+#       or a lack of port forwarding or anywhere you don't control the network
 
   isoImage.squashfsCompression = "lz4";
 }
