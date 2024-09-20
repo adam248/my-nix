@@ -1,32 +1,64 @@
 {
   disko.devices = {
     disk = {
-      nixos = {
-        device = "/dev/nvme0n1";
+      main = {
         type = "disk";
+        device = /dev/nvme0n1;
         content = {
           type = "gpt";
           partitions = {
-            ESP = {
+
+            bios = {
+              size = "1M";
+              type = "EF02"; # for grub MBR
+            };
+
+            efi = {
+              size = "200M";
               type = "EF00";
-              size = "750M";
               content = {
                 type = "filesystem";
                 format = "vfat";
-                mountpoint = "/boot";
+                mountpoint = "/boot/efi";
+                mountOptions = [ "ro" ]; # read-only
               };
             };
-            root = {
-              size = "100%";
+
+            boot = {
+              size = "1G";
               content = {
                 type = "filesystem";
                 format = "ext4";
-                mountpoint = "/";
+                mountpoint = "/boot";
               };
             };
+
+            root = {
+              size = "100%";
+              content = {
+                type = "btrfs";
+                extraArgs = [ "-f" ];
+                subvolumes = {
+                  "/root" = {
+                    mountpoint = "/";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/home" = {
+                    mountpoint = "/home";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/nix" = {
+                    mountpoint = "/nix";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                };
+              };
+            };
+
           };
         };
       };
     };
   };
 }
+
