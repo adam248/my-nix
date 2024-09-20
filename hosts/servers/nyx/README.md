@@ -12,6 +12,7 @@ It will also be a NAS.
 
 - Scrutiny (webui for hard drive health monitoring)
 - Plex
+- Nextcloud
 - Samba
 - Vaultwardan (or a good password manager)
 - Backups
@@ -55,5 +56,7 @@ Using MergerFS and Snapraid-Btrfs to create a custom flexible NAS.
 
 ## Future Tasks
 
+- [ ] setup reverse proxy to enable `plex.nyx.local` and `nextcloud.nyx.local` urls
+- [ ] research how to automate TRIM for SSDs and NVME in Nixos
 - [ ] create a network bond for the 2 onboard NICs for higher bandwidth
     - [Nixos Discourse Topic](https://discourse.nixos.org/t/bonding-interface/18346/6)
