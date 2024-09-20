@@ -22,7 +22,6 @@ let
     gpu-screen-recorder-gtk
     #kicad
     ledger-live-desktop
-    mpv
     musescore # musescore 4
     onlyoffice-bin
     #pika-backup # simple backup software deduplicated backups
@@ -480,10 +479,13 @@ in
   # $ nix search wget
   # Available to all users (including root)
   environment.systemPackages = with pkgs; [
-    bat
     #bottom # kewler than htop (use btm to run)
-    btop # better than btm
     #easyeffects # audio effects for pipewire audio
+    #htop
+    #python3 --disabled due to build error
+    #wireshark --uninstalled as I don't use too often
+    bat
+    btop # better than btm
     eza #exa replacement # ls replacement
     fd # required for nvim telescope
     ffmpeg
@@ -493,11 +495,10 @@ in
     git git-lfs
     gparted
     groff # fix for some --help outputs
-    #htop
     kitty # a better terminal emulator
     kup bup # KDE Backup tool & backup + version control
     man # make sure I have man pages available
-    #python3 --disabled due to build error
+    mpv
     qpwgraph
     ranger
     ripgrep # required for nvim telescope live-grep
@@ -509,7 +510,6 @@ in
     virt-manager
     vlc
     wget
-    #wireshark --uninstalled as I don't use too often
     zip
   ];
 
