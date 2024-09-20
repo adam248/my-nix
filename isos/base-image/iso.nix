@@ -23,8 +23,10 @@
     mergerfs
     neofetch
     neovim
+    nvme-cli        # nvme device-self-test <device> -s 1 ## (1 "short" | 2 "long")
     smartmontools   # for smartctl cmd
     stress          # stress testing cpu, memory, and IO 
+    stress-ng       # same as stress but with more different tests
     tldr
     tmux            # for reading the manual and editing the config at the same time
   ];
