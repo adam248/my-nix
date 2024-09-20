@@ -23,8 +23,7 @@
   # this is set by disko -> # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
   networking.hostName = "nyx"; # Define your hostname.
-  # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.domain = "local"; # fqdn = nyx.local
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   # Set your time zone and locale.
@@ -47,9 +46,15 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     disko
+    git
     mergerfs
+    neofetch
     neovim
+    nvme-cli
+    smartmontools
+    stress-ng
     tldr
+    tmux
   ];
 
   # MergerFS setup fstab entries
