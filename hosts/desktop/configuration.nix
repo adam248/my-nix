@@ -112,7 +112,7 @@ in
   # or
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
   # }
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.nameservers = [ "192.168.0.3" ];
 
   # Set your time zone.
   time.timeZone = "Australia/Perth";
