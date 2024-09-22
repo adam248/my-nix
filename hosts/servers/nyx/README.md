@@ -56,6 +56,8 @@ Using MergerFS and Snapraid-Btrfs to create a custom flexible NAS.
 
 ## Future Tasks
 
+- [ ] setup a dns server (AdguardHome looks good) that supports network-wide ad-blocking (pi-hole is not yet packaged for nixos and doesn't support encrypted dns!!!)
+    - see [Pi-hole vs AdguardHome vs Blocky](https://www.youtube.com/watch?v=rfBh2VVOVZA)
 - [ ] setup reverse proxy to enable `plex.nyx.local` and `nextcloud.nyx.local` urls
 - [ ] research how to automate TRIM for SSDs and NVME in Nixos
 - [ ] create a network bond for the 2 onboard NICs for higher bandwidth
