@@ -22,6 +22,7 @@ let
     gpu-screen-recorder-gtk
     #kicad
     ledger-live-desktop
+    muse-sounds-manager
     musescore # musescore 4
     onlyoffice-bin
     #pika-backup # simple backup software deduplicated backups
