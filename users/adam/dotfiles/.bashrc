@@ -10,6 +10,41 @@ alias hconfig='sudo vim /etc/nixos/hardware-configuration.nix'
 alias q='exit'
 alias cat='bat'
 
+# Recording screen shortcuts
+export RECORDING_EXT=mp4
+export SCREEN_RECORDING_PATH=~/Videos/screen-recording.$RECORDING_EXT
+export POST_RECORDING_PATH=~/Videos/post-recording.$RECORDING_EXT
+export SAVED_CLIPS_PATH=~/Videos/saved_clips
+export SAVED_RECORDINGS_PATH=~/Videos/saved_recordings
+
+# Record screen and default output and input
+alias record='gpu-screen-recorder -w portal -f 60 -o $SCREEN_RECORDING_PATH -a "default_output" -a "default_input"'
+
+function recordclip { 
+	# usage: recordclip <starttime> <finishtime>
+	# eg. recordclip 00:01:30 00:02:30.9
+	# take clip from 1 minute and 30 seconds to 2 minutes and 30.9 seconds
+	current_datetime=`date +"%Y%m%d%H%M%S%Z"`
+	ffmpeg -i $SCREEN_RECORDING_PATH -ss $1 -to $2 -map 0 -c copy $SAVED_CLIPS_PATH/clip_$current_datetime.$RECORDING_EXT
+}
+
+function postprocess { 
+	# takes one arg: the file name
+	# eg. postprocess screen-recording.mp4
+	ffmpeg -y -i $1 -filter_complex "[0:a:0]volume=0.75[a0];[0:a:1]volume=12.5[a1];[a0][a1]amerge=inputs=2[aout]" -map 0:v -map "[aout]" -c:v copy -c:a aac -b:a 192k $POST_RECORDING_PATH
+}
+
+function saveclip {
+	current_datetime=`date +"%Y%m%d%H%M%S%Z"`
+	cp $POST_RECORDING_PATH $SAVED_CLIPS_PATH/clips_$current_datetime.$RECORDING_EXT
+}
+
+function saverecording {
+	current_datetime=`date +"%Y%m%d%H%M%S%Z"`
+	cp $SCREEN_RECORDING_PATH $SAVED_RECORDINGS_PATH/recording_$current_datetime.$RECORDING_EXT
+}
+
+
 # Quick Logs
 function log {
 	text=""
@@ -18,9 +53,20 @@ function log {
 	do
 		text+="$var "
 	done
-	# write out to file
+	# append to log file
 	current_date=`date +"%Y.%m.%d %H:%M:%S %Z"`
 	echo "$current_date| $text" >> ~/my.log
+}
+
+# Audio Logging
+export AUDIO_LOGS_DIR=~/Audio/audio_logs
+function logmic {
+	current_datetime=`date +"%Y%m%d%H%M%S%Z"`
+	if [ ! -d $AUDIO_LOGS_DIR ]; then
+		echo "Directory does not exist. Creating: ~/Audio/audio_logs/" 
+		mkdir -p $AUDIO_LOGS_DIR
+	fi
+	arecord -f cd -r 44100 -c 1 $AUDIO_LOGS_DIR/audio_log_$current_datetime.wav
 }
 
 # Bitcoin Systemd shortcut
