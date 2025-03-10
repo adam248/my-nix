@@ -13,14 +13,15 @@ let
 
   # Unstable packages to be installed with USER
   unstable-pkgs = with pkgs.unstable; [ 
-    ardour # Reaper alternative 
-    decent-sampler # My very first nixpkgs contrib! Yay!
+    #decent-sampler # My very first nixpkgs contrib! Yay!
     discord
+    davinci-resolve
     #freecad
     #google-chrome
     gpu-screen-recorder
     gpu-screen-recorder-gtk
     #kicad
+    #libsForQt5.kwalletmanager
     ledger-live-desktop
     muse-sounds-manager
     musescore # musescore 4
@@ -30,14 +31,9 @@ let
     telegram-desktop
     tmuxifier
     varia
+    qbittorrent
+    qpwgraph
     #waydroid #need wayland and see the waydroid nix wiki page for more information
-  ];
-
-  kde-packages = with pkgs.unstable.kdePackages; [
-    kalarm
-    kcalc
-    kcharselect
-    kdenlive
   ];
 
 in
@@ -51,7 +47,7 @@ in
 
   # Install the latest Linux Kernel available
   # If nothing is specified then the LTS kernal for the current NixOS release is installed
-  boot.kernelPackages = pkgs.unstable.linuxPackages_latest; # using unstable due to amdgpu boot issue
+  boot.kernelPackages = pkgs.linuxPackages_6_11;
   # If mulit--monitor setup is having issues...
   #boot.kernelParams = [
   #  "video=card0-DP-1:2560x1440@144"
@@ -101,7 +97,6 @@ in
   ];
 
   hardware.opengl.enable = true;
-  hardware.opengl.driSupport = true;
   hardware.opengl.driSupport32Bit = true; # Allow 32-bit programs
 
   networking.hostName = "nxbx-dsktp"; # Define your hostname.
@@ -127,6 +122,34 @@ in
   };
 
   services = {
+
+    ###
+    ### NOTE: it seems that services.wivrn is not available in the 24.05 channel
+    ###
+    #wivrn = {
+    #  enable = true;
+    #  openFirewall = true;
+    #  defaultRuntime = true; # make wivrn the default OpenXR runtime
+    #  autoStart = true;
+
+    #  config = {
+    #    enable = true;
+    #    json = {
+    #      scale = 1.0; # foveation scaling
+    #      bitrate = 100000000; # 100Mb/s
+    #      encoders = [
+    #        {
+    #          encoder = "vaapi";
+    #          codec = "h265";
+    #          width = 1.0;
+    #          height = 1.0;
+    #          offset_x = 0.0;
+    #          offset_y = 0.0;
+    #        }
+    #      ];
+    #    };
+    #  };
+    #};
 
     ## media server setup notes
     # prowlarr.enable = true; # Jackett replacment
@@ -179,7 +202,9 @@ in
       autoLogin.user = "adam";
 
       # plasma 6 on xserver
-      defaultSession = "plasmax11";
+      #defaultSession = "plasmax11";
+      #or
+      sddm.wayland.enable = true;
 
     };
 
@@ -197,6 +222,9 @@ in
 
       # Set a DE (plasma 5)
       #desktopManager.plasma5.enable = true;
+
+      # enable XFCE as a backup desktop env
+      #desktopManager.xfce.enable = true;
 
 
     };
@@ -226,7 +254,7 @@ in
   #};
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.printing.enable = false;
   services.avahi.enable = true;
   services.avahi.openFirewall = true;
 
@@ -390,10 +418,12 @@ in
       brave
       dropbox
       element-desktop
+      feh # light-weight image viewer
       flameshot # screenshots
       gh # Github CLI tool
       gimp
       github-desktop
+      gitkraken
       gnuradio
       google-chrome
       guitarix # Guitar Amp Emulator
@@ -411,11 +441,11 @@ in
       openttd
       oh-my-git
       piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
-      qbittorrent
       qdirstat
       reaper 
       rust-analyzer
       scribus # OSS Alt for Publisher / InDesign / Affinity Designer
+      shotwell # photo viewer and management
       starship # customize shell prompt
       thunderbird
       transcribe
@@ -434,7 +464,7 @@ in
       # Laser cutter/engraving tool
       #lightburn # Layout, editing, and control software for your laser cutter
 
-    ] ++ unstable-pkgs ++ kde-packages;
+    ] ++ unstable-pkgs;
   };
 
 
@@ -476,6 +506,8 @@ in
     #};
   };
 
+  programs.wireshark.enable = true;
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   # Available to all users (including root)
@@ -484,9 +516,11 @@ in
     #easyeffects # audio effects for pipewire audio
     #htop
     #python3 --disabled due to build error
-    #wireshark --uninstalled as I don't use too often
+
     bat
     btop # better than btm
+    kdePackages.discover # for easier flatpak management
+    kdePackages.okular # universal document viewer (replacing gwenviewer) 
     eza #exa replacement # ls replacement
     fd # required for nvim telescope
     ffmpeg
@@ -497,10 +531,10 @@ in
     gparted
     groff # fix for some --help outputs
     kitty # a better terminal emulator
-    kup bup # KDE Backup tool & backup + version control
+    #kup bup # KDE Backup tool & backup + version control
     man # make sure I have man pages available
     mpv
-    qpwgraph
+    #qpwgraph # using the unstable version
     ranger
     ripgrep # required for nvim telescope live-grep
     spice # virt manager helper
@@ -511,6 +545,7 @@ in
     virt-manager
     vlc
     wget
+    wireshark
     zip
   ];
 
@@ -613,6 +648,7 @@ in
                 "openssl-1.1.1v"
                 "python-2.7.18.6"
                 "electron-24.8.6"
+                "qbittorrent-4.6.4"
               ];
   };
 
