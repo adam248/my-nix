@@ -360,10 +360,9 @@ in
   };
 
   security.pki.certificateFiles = [
-    ./nyx.home/adguard.nyx.home
-    ./nyx.home/cloud.nyx.home
-    ./nyx.home/office.nyx.home
     ./nyx.home/root.nyx.home
+    ./nyx.home/intermediate.nyx.home
+    ./nyx.home/audiobookshelf.nyx.home
   ];
 
   # Sound (Pipewire) configuration
