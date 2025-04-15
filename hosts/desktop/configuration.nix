@@ -15,7 +15,7 @@ let
   unstable-pkgs = with pkgs.unstable; [ 
     #decent-sampler # My very first nixpkgs contrib! Yay!
     discord
-    davinci-resolve
+    #davinci-resolve
     #freecad
     #google-chrome
     gpu-screen-recorder
@@ -26,6 +26,7 @@ let
     muse-sounds-manager
     musescore # musescore 4
     onlyoffice-bin
+    openai-whisper
     #pika-backup # simple backup software deduplicated backups
     #rambox
     telegram-desktop
@@ -42,6 +43,7 @@ in
   imports = [ 
       ./hardware-configuration.nix # Include the results of the hardware scan.
       <home-manager/nixos> # Include Home Manager - uses home-manager channel (sudo)
+      ./nordvpn.nix # Include custom NordVPN CLI derivation
     ];
 
 
@@ -61,6 +63,8 @@ in
     #"vm.max_map_count" = 2147483642; # value the same as Steam Deck
     "fs.file-max" = 524288; # recommended from star citizen guide
   };
+
+  boot.loader.timeout = 20;
 
   # SWAP is needed for Star Citizen
   swapDevices = [{
@@ -108,6 +112,14 @@ in
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
   # }
   networking.nameservers = [ "192.168.0.3" ];
+  networking.hosts = {
+    "192.168.0.3" = [ "nyx.home" ];
+  };
+
+  # enable VPN service (currently I have a NordVPN subscription)
+  myypo.services.custom.nordvpn.enable = true;
+  # settings recommended in nordvpn.nix derivation
+  networking.firewall.checkReversePath = false;
 
   # Set your time zone.
   time.timeZone = "Australia/Perth";
@@ -347,6 +359,12 @@ in
     };
   };
 
+  security.pki.certificateFiles = [
+    ./nyx.home/adguard.nyx.home
+    ./nyx.home/cloud.nyx.home
+    ./nyx.home/office.nyx.home
+  ];
+
   # Sound (Pipewire) configuration
   # rtkit is optional but recommended  
   security.rtkit.enable = true;
@@ -383,7 +401,7 @@ in
     isNormalUser = true;
     extraGroups = [
       "wheel" "video" "audio" "networkmanager" "lp" "scanner" "libvirtd"
-      "wireshark" "docker"
+      "wireshark" "docker" "nordvpn"
     ];
     initialPassword = "adam";
     packages = with pkgs; [
@@ -421,7 +439,7 @@ in
       feh # light-weight image viewer
       flameshot # screenshots
       gh # Github CLI tool
-      gimp
+      #gimp - use the flatpak version (because it updated to 3.0 first)
       github-desktop
       gitkraken
       gnuradio
@@ -607,12 +625,17 @@ in
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
+
+
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 
-    1234 # for testing dev web sites
+    443   # NordVPN service
+    1234  # for testing dev web sites
     57621 # spotify local discovery
   ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedUDPPorts = [ 
+    1194  # NordVPN service
+  ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 

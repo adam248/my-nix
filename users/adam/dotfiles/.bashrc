@@ -14,34 +14,36 @@ alias cat='bat'
 export RECORDING_EXT=mp4
 export SCREEN_RECORDING_PATH=~/Videos/screen-recording.$RECORDING_EXT
 export POST_RECORDING_PATH=~/Videos/post-recording.$RECORDING_EXT
-export SAVED_CLIPS_PATH=~/Videos/saved_clips
 export SAVED_RECORDINGS_PATH=~/Videos/saved_recordings
+export CLIPS_PATH=~/Videos/clips
 
 # Record screen and default output and input
-alias record='gpu-screen-recorder -w portal -f 60 -o $SCREEN_RECORDING_PATH -a "default_output" -a "default_input"'
+alias record='gpu-screen-recorder -w portal -restore-portal-session yes -f 60 -o $SCREEN_RECORDING_PATH -a "default_output" -a "default_input"'
 
-function recordclip { 
-	# usage: recordclip <starttime> <finishtime>
-	# eg. recordclip 00:01:30 00:02:30.9
+function clip { 
+	# usage: clip <filepath> <starttime> <finishtime>
+	# eg. clip screen-recording.mp4 00:01:30 00:02:30.9
 	# take clip from 1 minute and 30 seconds to 2 minutes and 30.9 seconds
 	current_datetime=`date +"%Y%m%d%H%M%S%Z"`
-	ffmpeg -i $SCREEN_RECORDING_PATH -ss $1 -to $2 -map 0 -c copy $SAVED_CLIPS_PATH/clip_$current_datetime.$RECORDING_EXT
+	ffmpeg -i $1 -ss $2 -to $3 -map 0 -c copy $CLIPS_PATH/clip_$current_datetime.$RECORDING_EXT
 }
 
-function postprocess { 
-	# takes one arg: the file name
-	# eg. postprocess screen-recording.mp4
+function post { 
+	# usage: post <filepath>
+	# eg. post screen-recording.mp4
 	ffmpeg -y -i $1 -filter_complex "[0:a:0]volume=0.75[a0];[0:a:1]volume=12.5[a1];[a0][a1]amerge=inputs=2[aout]" -map 0:v -map "[aout]" -c:v copy -c:a aac -b:a 192k $POST_RECORDING_PATH
 }
 
-function saveclip {
-	current_datetime=`date +"%Y%m%d%H%M%S%Z"`
-	cp $POST_RECORDING_PATH $SAVED_CLIPS_PATH/clips_$current_datetime.$RECORDING_EXT
-}
-
-function saverecording {
+function backuprecording {
 	current_datetime=`date +"%Y%m%d%H%M%S%Z"`
 	cp $SCREEN_RECORDING_PATH $SAVED_RECORDINGS_PATH/recording_$current_datetime.$RECORDING_EXT
+}
+
+function extracttrack2 {
+	# usage: extractaudio <filepath>
+	# extracts audio track 2 (normally my mic) this is for transcribing after and using AI to find possible clip moments
+	#
+	echo "NOT IMPLEMENTED"
 }
 
 
@@ -67,6 +69,11 @@ function logmic {
 		mkdir -p $AUDIO_LOGS_DIR
 	fi
 	arecord -f cd -r 44100 -c 1 $AUDIO_LOGS_DIR/audio_log_$current_datetime.wav
+}
+
+function transcribe {
+	# usage: transcribe_audio_log audio_log.wav
+	whisper $1 --language English --fp16 False
 }
 
 # Bitcoin Systemd shortcut
