@@ -113,7 +113,14 @@ in
   # }
   networking.nameservers = [ "192.168.0.3" ];
   networking.hosts = {
-    "192.168.0.3" = [ "nyx.home" ];
+    "192.168.0.1" = [ "router.home" ];
+    "192.168.0.3" = [ 
+        "nyx.home" 
+        "cloud.nyx.home"
+        "plex.nyx.home"
+        "audiobookshelf.nyx.home"
+        "adguard.nyx.home"
+      ];
   };
 
   # enable VPN service (currently I have a NordVPN subscription)
@@ -302,6 +309,7 @@ in
     viAlias = true;
     configure = {
       customRC = ''
+        set ignorecase
         set number relativenumber
         set nu rnu
         set mouse=a
@@ -360,9 +368,7 @@ in
   };
 
   security.pki.certificateFiles = [
-    ./nyx.home/root.nyx.home
-    ./nyx.home/intermediate.nyx.home
-    ./nyx.home/audiobookshelf.nyx.home
+    ./nyx.home.crt
   ];
 
   # Sound (Pipewire) configuration

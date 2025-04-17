@@ -45,6 +45,8 @@
     ];
   };
 
+  users.groups.media = {};
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -96,13 +98,18 @@
   };
 
   # Security
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "adjbutler+acme@gmail.com";
-    defaults.server = "https://ca.nyx.home";
-  };
+  # no longer needed because I made my own wildcard crt at /etc/nginx/certs/nyx.home.crt
+  #security.acme = {
+  #  acceptTerms = false;
+  #  defaults.email = "adjbutler+acme@gmail.com";
+  #  defaults.server = "http://ca.nyx.home";
+  #};
 
   # List services that you want to enable:
+
+  # rabbitmq was running and failing at each build for an unknown reason
+  # so I have manually disabled it here
+  services.rabbitmq.enable = false;
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
@@ -111,62 +118,124 @@
   services.nginx.virtualHosts = {
 
     "scrutiny.nyx.home" = {
+      # force HTTPS
       forceSSL = true;
-      enableACME = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:8111";
       };
     };
 
     "adguard.nyx.home" = {
+      # force HTTPS
       forceSSL = true;
-      enableACME = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:5353";
       };
     };
 
     "vault.nyx.home" = {
+      # force HTTPS
       forceSSL = true;
-      enableACME = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:8222";
       };
     };
 
     "plex.nyx.home" = {
+      # force HTTPS
+      forceSSL = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:32400";
       };
     };
 
     "cloud.nyx.home" = {
+      # force HTTPS
       forceSSL = true;
-      enableACME = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
     };
 
     "office.nyx.home" = {
+      # force HTTPS
       forceSSL = true;
-      enableACME = true;
-    };
-
-    "ca.nyx.home" = {
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:8443";
-      };
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
     };
 
     "prowlarr.nyx.home" = {
+      # force HTTPS
       forceSSL = true;
-      enableACME = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:9696";
       };
     };
 
-    "audiobookshelf.nyx.home" = {
+    "sonarr.nyx.home" = {
+      # force HTTPS
       forceSSL = true;
-      enableACME = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8989";
+      };
+    };
+
+    "radarr.nyx.home" = {
+      # force HTTPS
+      forceSSL = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:7878";
+      };
+    };
+
+    "lidarr.nyx.home" = {
+      # force HTTPS
+      forceSSL = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8686";
+      };
+    };
+
+    "readarr.nyx.home" = {
+      # force HTTPS
+      forceSSL = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8787";
+      };
+    };
+
+    "audiobookshelf.nyx.home" = {
+      # force HTTPS
+      forceSSL = true;
+      sslCertificate = "/etc/nginx/certs/nyx.home.crt";
+      sslCertificateKey = "/etc/nginx/certs/nyx.home.key";
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:8696";
       };
@@ -178,11 +247,45 @@
   services.audiobookshelf = {
     enable = true;
     port = 8696;
+    #changing this dataDir from the default seems to break audiobookshelf?
     #dataDir = "/metadata/audiobookshelf";
+    group = "media";
   };
 
-  # Prowlarr - torrent and usernet indexer and download manager
-  services.prowlarr.enable = true;
+  # The Arr Suite
+  services.prowlarr.enable = true; 	# Prowlarr - torrent and usernet indexer and download manager
+  services.sonarr.enable = true; 	# Sonarr - Series (TV/Anime/Shows) automatic downloader
+  services.radarr.enable = true; 	# Radarr - Movies/Films automatic downloader
+  services.lidarr.enable = true; 	# Lidarr - Music automatic downloader
+  services.readarr.enable = true; 	# Readarr - Books automatic downloader
+
+  services.bazarr.enable = false;   	# Bazarr - Subtitle automatic downloader for Sonarr & Radarr
+
+  # Arr apps not available on nixos yet
+  #services.overseerr.enable = false;  	# Overseerr - A beautiful request media web app
+  #services.tdarr.enable = false;  	# Tdarr - automatic transcoder
+  #services.mylar3.enable = false;  	# Mylar3 - Comics downloader
+
+  # Arr apps I will not use
+  #services.ombi.enable = false;   	# Ombi - simple request movies/tv shows web app
+
+  services.sonarr = {
+    dataDir = "/metadata/sonarr";
+    group = "media";
+  };
+  services.radarr = {
+    dataDir = "/metadata/radarr";
+    group = "media";
+  };
+  services.lidarr = {
+    dataDir = "/metadata/lidarr";
+    group = "media";
+  };
+  services.readarr = {
+    dataDir = "/metadata/readarr";
+    group = "media";
+  };
+
 
   # Samba network shares
   services.samba = {
@@ -207,68 +310,9 @@
 	"create mask" = "0644";
 	"directory mask" = "0755";
 	"force user" = "plex";
-	"force group" = "plex";
+	"force group" = "media";
       };
     };
-  };
-
-
-  # Cert Auth step-ca
-  services.step-ca = {
-    enable = true;
-    intermediatePasswordFile = "/etc/nixos/step-ca-pass";
-    address = "127.0.0.1";
-    port = 8443;
-    openFirewall = true;
-    settings = builtins.fromJSON ''
-
-{
-	"root": "/root/.step/certs/root_ca.crt",
-	"federatedRoots": null,
-	"crt": "/root/.step/certs/intermediate_ca.crt",
-	"key": "/root/.step/secrets/intermediate_ca_key",
-	"address": ":443",
-	"insecureAddress": "",
-	"dnsNames": [
-		"192.168.0.3"
-	],
-	"logger": {
-		"format": "text"
-	},
-	"db": {
-		"type": "badgerv2",
-		"dataSource": "/root/.step/db",
-		"badgerFileLoadingMode": ""
-	},
-	"authority": {
-		"provisioners": [
-			{
-				"type": "JWK",
-				"name": "adam@nyx.home",
-				"key": {
-					"use": "sig",
-					"kty": "EC",
-					"kid": "9tNI0q318tDooHxlfpfuAkqjAzXulllzViRDDcHZies",
-					"crv": "P-256",
-					"alg": "ES256",
-					"x": "SuzG6AIcKC6sP2SO1zfnsYMQ2C5sty7jsb1MUmdb4kM",
-					"y": "ygaPJ9fuqQrUQ5o3JmHdpBvwspON0XAeIVtfsLAIYnA"
-				},
-				"encryptedKey": "eyJhbGciOiJQQkVTMi1IUzI1NitBMTI4S1ciLCJjdHkiOiJqd2sranNvbiIsImVuYyI6IkEyNTZHQ00iLCJwMmMiOjYwMDAwMCwicDJzIjoiX1lrMk9Ud0ZNZldMZVFiMm9ybDhJdyJ9.TD7AknjenWl2QZ75AfLGzv5WdjQjf21nWZL6dDy4CYTtZjhtusXH_A.2OcmrMUnhWk5gOma.9HYvNXo0EdEWOVUNW-uufpsQKRWJzM4zmAJysiSOeneXS0i6VK2eNCTnNvPsocasqJ8Vs2htJTIDVa07ncz8u6tuPEZvHMVmLfSW41-pOM_svB9iDvL4Qgu6ig0JN5h74jGMkBBMFzL2jedt_gk7rmdCm3Vq2i2XkAm98ckNh51cU1WHpkuPuVZ4ofjVyQWlf8eBXyeMcBmV1lFOVyfdUArHBV3FOwLHU4OAQrMUT4YAxB_xD-2zR7C4Q_UVURo8uhwFAJ2fyMR-qhK5eRVynqNcUoodzUIpjVeus1AQ7A7D1OIHatIoGq6bU8LWTQ-E2IYjItDZ7n9K1ylm2PQ.wW3z6_XQWFSsbFxkgm3rEA"
-			}
-		]
-	},
-	"tls": {
-		"cipherSuites": [
-			"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
-			"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
-		],
-		"minVersion": 1.2,
-		"maxVersion": 1.3,
-		"renegotiation": false
-	}
-}
-    '';
   };
 
   # Nextcloud
@@ -311,6 +355,7 @@
     enable = true;
     openFirewall = true;
     dataDir = "/metadata/plex";
+    group = "media";
     extraPlugins = [
       (builtins.path {
         name = "Audnexus.bundle";
@@ -391,6 +436,10 @@
     ];
     defaultGateway = "192.168.0.1";
     nameservers = [ "1.1.1.1" "8.8.8.8" ];
+    hosts = { 
+      "192.168.0.1" = [ "router.home" ];
+      "192.168.0.3" = [ "nyx.home" "cloud.nyx.home" ]; 
+    };
   };
 
   # Copy the NixOS configuration file and link it from the resulting system
