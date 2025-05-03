@@ -17,6 +17,7 @@ let
     discord
     #davinci-resolve
     #freecad
+    flameshot
     #google-chrome
     gpu-screen-recorder
     gpu-screen-recorder-gtk
@@ -204,12 +205,14 @@ in
     };
 
     ratbagd.enable = true; # HID configurator (Logitech mouse) use piper GUI
-    
-    plex = {
-      enable = false; # come on ... get a plex server setup already!!!
-      openFirewall = true;
-      package = pkgs.unstable.plex;
+
+    # Tor - basic setup
+    tor = { 
+      enable = true;
+      client.enable = true;
+      controlSocket.enable = true;
     };
+    
 
     displayManager = {
       # Set display manager (login window)
@@ -443,7 +446,7 @@ in
       dropbox
       element-desktop
       feh # light-weight image viewer
-      flameshot # screenshots
+      #flameshot # screenshots
       gh # Github CLI tool
       #gimp - use the flatpak version (because it updated to 3.0 first)
       github-desktop
@@ -459,7 +462,8 @@ in
       krita
       lazygit
       libreoffice
-      neofetch
+      #neofetch
+      fastfetch
       obs-studio
       obsidian
       openttd
@@ -559,10 +563,13 @@ in
     man # make sure I have man pages available
     mpv
     #qpwgraph # using the unstable version
+    #onionshare-gui # this is broken on nixos (use flatpak)
     ranger
     ripgrep # required for nvim telescope live-grep
     spice # virt manager helper
+    sqlitebrowser
     tldr
+    tor-browser
     tree
     trickle
     unzip
