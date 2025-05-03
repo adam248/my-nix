@@ -10,6 +10,11 @@ alias hconfig='sudo vim /etc/nixos/hardware-configuration.nix'
 alias q='exit'
 alias cat='bat'
 
+# Shortcuts to directories
+alias villa='cd /home/adam/villa/'
+alias projects='cd /home/adam/villa/projects'
+alias villacode='cd /home/adam/villa/projects/code'
+
 # Recording screen shortcuts
 export RECORDING_EXT=mp4
 export SCREEN_RECORDING_PATH=~/Videos/screen-recording.$RECORDING_EXT
@@ -19,6 +24,11 @@ export CLIPS_PATH=~/Videos/clips
 
 # Record screen and default output and input
 alias record='gpu-screen-recorder -w portal -restore-portal-session yes -f 60 -o $SCREEN_RECORDING_PATH -a "default_output" -a "default_input"'
+
+function neofetch {
+	echo "NEOFETCH IS EOL USING FASTFETCH INSTEAD!!!!!!!!!!!!!!!!!!!!!!*******************"
+	fastfetch
+}
 
 function clip { 
 	# usage: clip <filepath> <starttime> <finishtime>
@@ -121,6 +131,8 @@ function backupnix {
 }
 
 function update {
+	echo "flatpak update"
+	flatpak update
 	echo "sudo nixos-rebuild switch"
 	sudo nixos-rebuild switch
 	source ~/.bashrc
