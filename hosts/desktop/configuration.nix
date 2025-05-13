@@ -17,7 +17,7 @@ let
     discord
     #davinci-resolve
     #freecad
-    flameshot
+    (flameshot.override { enableWlrSupport = true; }) # does not work on KDE at the moment
     #google-chrome
     gpu-screen-recorder
     gpu-screen-recorder-gtk
@@ -25,7 +25,7 @@ let
     #libsForQt5.kwalletmanager
     ledger-live-desktop
     muse-sounds-manager
-    musescore # musescore 4
+    #musescore # trying out the flatpak # musescore 4
     onlyoffice-bin
     openai-whisper
     #pika-backup # simple backup software deduplicated backups
@@ -191,7 +191,7 @@ in
     fstrim.enable = true; # for auto trim of ssds drives
 
     bitcoind."bitcoind" = {
-      enable = false;
+      enable = true;
       dataDir = "/data/bitcoin";
       extraCmdlineOptions = [ 
         "-maxuploadtarget=1024" # Max 1GB upload per day
@@ -202,6 +202,7 @@ in
         "-rpcthreads=1" # Limit bitcoind rpc api to 1 thread
       ];
       dbCache = 100; # Limit dbcache size to 100MB
+      package = pkgs.bitcoind-knots;
     };
 
     ratbagd.enable = true; # HID configurator (Logitech mouse) use piper GUI
@@ -283,6 +284,9 @@ in
   # Enable teamviewer
   services.teamviewer.enable = true;
 
+  # Enable the ability to run AppImages directly
+  programs.appimage.binfmt = true;
+
   # Enable KDEConnect
   programs.kdeconnect.enable = true;
 
@@ -343,6 +347,7 @@ in
           telescope-nvim telescope-live-grep-args-nvim
           harpoon
           nvim-treesitter.withAllGrammars
+          kotlin-vim
           fugitive
           nvim-lint
           {
@@ -509,9 +514,11 @@ in
   xdg.portal= {
     enable = true;
     # NOTE: use `xdg-desktop-portal-gtk` if GNOME
-    # wlr.enable = true;
+    wlr.enable = true;
     # gtk portal needed to make gtk apps happy
-    extraPortals = [ pkgs.xdg-desktop-portal-kde ];
+    extraPortals = with pkgs; [ 
+      xdg-desktop-portal-kde 
+    ];
   };
 
   # Enable auto sudo requests for supported apps
@@ -549,6 +556,7 @@ in
     btop # better than btm
     kdePackages.discover # for easier flatpak management
     kdePackages.okular # universal document viewer (replacing gwenviewer) 
+    kdePackages.spectacle # screenshot application
     eza #exa replacement # ls replacement
     fd # required for nvim telescope
     ffmpeg
