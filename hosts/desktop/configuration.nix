@@ -13,7 +13,8 @@ let
 
   # Unstable packages to be installed with USER
   unstable-pkgs = with pkgs.unstable; [ 
-    #decent-sampler # My very first nixpkgs contrib! Yay!
+    android-studio
+    decent-sampler # My very first nixpkgs contrib! Yay!
     discord
     #davinci-resolve
     #freecad
@@ -50,7 +51,7 @@ in
 
   # Install the latest Linux Kernel available
   # If nothing is specified then the LTS kernal for the current NixOS release is installed
-  boot.kernelPackages = pkgs.linuxPackages_6_11;
+  boot.kernelPackages = pkgs.linuxPackages;
   # If mulit--monitor setup is having issues...
   #boot.kernelParams = [
   #  "video=card0-DP-1:2560x1440@144"
@@ -94,15 +95,12 @@ in
   # Install the AMD GPU driver
   boot.initrd.kernelModules = [ "amdgpu" ];
 
-  # OpenCL (Extra GPU Stuff
-  hardware.opengl.extraPackages = with pkgs; [
+  hardware.graphics.enable = true;
+  hardware.graphics.extraPackages = with pkgs; [
     amdvlk
-    rocm-opencl-icd
-    rocm-opencl-runtime
   ];
-
-  hardware.opengl.enable = true;
-  hardware.opengl.driSupport32Bit = true; # Allow 32-bit programs
+  hardware.graphics.enable32Bit = true; # Allow 32-bit programs
+  hardware.enableAllFirmware = true;
 
   networking.hostName = "nxbx-dsktp"; # Define your hostname.
 
@@ -143,50 +141,17 @@ in
 
   services = {
 
-    ###
-    ### NOTE: it seems that services.wivrn is not available in the 24.05 channel
-    ###
-    #wivrn = {
-    #  enable = true;
-    #  openFirewall = true;
-    #  defaultRuntime = true; # make wivrn the default OpenXR runtime
-    #  autoStart = true;
+    ollama = {
+      enable = true;
+      # loadModels not available in 24.05
+      #loadModels = [ 
+      #  "llama3.2:3b"   # 2.0 GB
+      #  "mistral:7b"        # 4.1 GB
+      #  "llama3:8b"         # 4.7 GB
+      #  "deepseek-r1:7b"    # 4.7 GB
+      #];
+    };
 
-    #  config = {
-    #    enable = true;
-    #    json = {
-    #      scale = 1.0; # foveation scaling
-    #      bitrate = 100000000; # 100Mb/s
-    #      encoders = [
-    #        {
-    #          encoder = "vaapi";
-    #          codec = "h265";
-    #          width = 1.0;
-    #          height = 1.0;
-    #          offset_x = 0.0;
-    #          offset_y = 0.0;
-    #        }
-    #      ];
-    #    };
-    #  };
-    #};
-
-    ## media server setup notes
-    # prowlarr.enable = true; # Jackett replacment
-    # prowlarr works with all the following
-    # Lidarr (music), Mylar3 (comics), 
-    # Radarr (movies), Readarr (books), Sonarr (tv)
-    # Readarr works with Calibre
-    # All above work with plex
-    # https://openaudible.org/ for Audible backup and downloads of audio books
-    # Audiobooks in Calibre can be done by adding the audiobook to a zip file
-    # then putting the zip file in the Calibre book folder
-    # then you get to see the book cover and download the zip file to listen
-    # https://github.com/seblucas/cops OPDS server
-    # Kavita might be a good Calibre alternative
-    # Maybe Jellyfin is best as it could replace plex and calibre???
-    # Jellyfin does books and comics!
-    # Jellyfin is a fork of emby...
 
     fstrim.enable = true; # for auto trim of ssds drives
 
@@ -355,7 +320,6 @@ in
               config = ''
                   lua << EOF
                   require('lspconfig').rust_analyzer.setup{}
-                  require('lspconfig').tsserver.setup{}
                   EOF
               '';
           }
@@ -517,7 +481,7 @@ in
     wlr.enable = true;
     # gtk portal needed to make gtk apps happy
     extraPortals = with pkgs; [ 
-      xdg-desktop-portal-kde 
+      kdePackages.xdg-desktop-portal-kde 
     ];
   };
 
@@ -570,6 +534,7 @@ in
     #kup bup # KDE Backup tool & backup + version control
     man # make sure I have man pages available
     mpv
+    nix
     #qpwgraph # using the unstable version
     #onionshare-gui # this is broken on nixos (use flatpak)
     ranger
@@ -579,7 +544,7 @@ in
     tldr
     tor-browser
     tree
-    trickle
+    #trickle # broken in 25.05
     unzip
     virt-manager
     vlc
@@ -629,8 +594,14 @@ in
   programs.dconf.enable = true;
 
   # Install custom fonts
-  fonts.packages = with pkgs; [
-    nerdfonts
+  fonts.packages = with pkgs.nerd-fonts; [
+    droid-sans-mono
+    jetbrains-mono
+    hack
+    meslo-lg
+    ubuntu-sans
+    ubuntu
+    zed-mono
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
