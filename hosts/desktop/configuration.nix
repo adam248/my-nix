@@ -441,6 +441,7 @@ in
       oh-my-git
       piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
       qdirstat
+      realvnc-vnc-viewer
       reaper 
       rust-analyzer
       scribus # OSS Alt for Publisher / InDesign / Affinity Designer
