@@ -13,10 +13,11 @@ let
 
   # Unstable packages to be installed with USER
   unstable-pkgs = with pkgs.unstable; [ 
-    android-studio
+    #android-studio # too slow at downloading
     decent-sampler # My very first nixpkgs contrib! Yay!
     discord
     #davinci-resolve
+    comma
     #freecad
     (flameshot.override { enableWlrSupport = true; }) # does not work on KDE at the moment
     #google-chrome
@@ -412,6 +413,7 @@ in
       #authy
       blender
       brave
+      code-cursor
       dropbox
       element-desktop
       feh # light-weight image viewer
@@ -518,9 +520,13 @@ in
 
     bat
     btop # better than btm
+
+    kdePackages.akonadi # storage service for PIM data
     kdePackages.discover # for easier flatpak management
-    kdePackages.okular # universal document viewer (replacing gwenviewer) 
+    kdePackages.korganizer # Organizational assistant,
+    kdePackages.okular # universal document viewer (replacing gwenviewer)
     kdePackages.spectacle # screenshot application
+
     eza #exa replacement # ls replacement
     fd # required for nvim telescope
     ffmpeg
@@ -534,6 +540,7 @@ in
     #kup bup # KDE Backup tool & backup + version control
     man # make sure I have man pages available
     mpv
+    nh # NH is a modern helper utility aims to consolidate and reimplement some of the commands from the NixOS ecosystem
     nix
     #qpwgraph # using the unstable version
     #onionshare-gui # this is broken on nixos (use flatpak)
@@ -551,6 +558,7 @@ in
     wget
     wireshark
     zip
+
   ];
 
   programs.tmux = {
@@ -602,6 +610,7 @@ in
     ubuntu-sans
     ubuntu
     zed-mono
+    pkgs.julia-mono
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
