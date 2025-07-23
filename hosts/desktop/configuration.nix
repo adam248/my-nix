@@ -13,6 +13,7 @@ let
 
   # Unstable packages to be installed with USER
   unstable-pkgs = with pkgs.unstable; [ 
+    authenticator
     #android-studio # too slow at downloading
     decent-sampler # My very first nixpkgs contrib! Yay!
     discord
@@ -34,6 +35,7 @@ let
     #rambox
     telegram-desktop
     tmuxifier
+    webcamoid
     varia
     qbittorrent
     qpwgraph
@@ -430,6 +432,7 @@ in
       inkscape
       keepass xdotool
       keymapp # moonlander ZSA app
+      kid3 # Audio file meta data editor
       krita
       lazygit
       libreoffice
