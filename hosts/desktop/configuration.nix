@@ -13,6 +13,7 @@ let
 
   # Unstable packages to be installed with USER
   unstable-pkgs = with pkgs.unstable; [ 
+    anki # Spaced repetion flashcard program (for language learning)
     authenticator
     #android-studio # too slow at downloading
     decent-sampler # My very first nixpkgs contrib! Yay!
@@ -27,6 +28,7 @@ let
     #kicad
     #libsForQt5.kwalletmanager
     ledger-live-desktop
+    lunarvim
     muse-sounds-manager
     #musescore # trying out the flatpak # musescore 4
     onlyoffice-bin
@@ -430,6 +432,7 @@ in
       handbrake
       imagemagick
       inkscape
+      kdePackages.kdenlive
       keepass xdotool
       keymapp # moonlander ZSA app
       kid3 # Audio file meta data editor
@@ -530,6 +533,7 @@ in
     kdePackages.korganizer # Organizational assistant,
     kdePackages.okular # universal document viewer (replacing gwenviewer)
     kdePackages.spectacle # screenshot application
+    kdePackages.kcharselect # Tool to select and copy special characters
 
     eza #exa replacement # ls replacement
     fd # required for nvim telescope
@@ -611,10 +615,12 @@ in
     jetbrains-mono
     hack
     meslo-lg
+    noto
     ubuntu-sans
     ubuntu
     zed-mono
     pkgs.julia-mono
+    pkgs.notonoto
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
