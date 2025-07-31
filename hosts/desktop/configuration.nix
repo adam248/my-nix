@@ -191,8 +191,8 @@ in
       sddm.autoNumlock = true;
 
       # Enable autologin for a USER
-      autoLogin.enable = true;
-      autoLogin.user = "adam";
+      #autoLogin.enable = true;
+      #autoLogin.user = "adam";
 
       # plasma 6 on xserver
       #defaultSession = "plasmax11";
