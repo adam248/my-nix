@@ -387,6 +387,7 @@ in
       "wireshark" "docker" "nordvpn"
     ];
     initialPassword = "adam";
+    linger = true;
     packages = with pkgs; [
       # Custom Packages
       ## Lutris Override
