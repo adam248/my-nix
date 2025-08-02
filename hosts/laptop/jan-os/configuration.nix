@@ -64,8 +64,18 @@
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = false;
 
+  # Recommended by ChatGPT for auto-mount of usb drives
+  services.dbus.enable = true;
+  #security.polkit.enable = true;
+  services.udisks2.enable = true; 
+  
+
   # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm = { 
+    enable = true;
+    wayland.enable = true;
+    enableHidpi = true;
+  };
 
   services.desktopManager.plasma6.enable = true;
 
@@ -112,7 +122,6 @@
     description = "Adam Butler";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      kdePackages.kate
     #  thunderbird
     ];
   };
@@ -120,7 +129,10 @@
   users.users.jan = {
     isNormalUser = true;
     description = "Jan Butler";
-    extraGroups = [ "networkmanager" "audio" "video" "plugdev" "lp" "scanner" "cdrom" "power" "users" "uaccess" "upower" ];
+    extraGroups = [ 
+      "networkmanager" "audio" "video" "plugdev" "lp" "scanner" "cdrom" 
+      "power" "users" "uaccess" "upower" "storage" "disk"
+      ];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -141,12 +153,19 @@
     ffmpeg
     kdePackages.ark
     kdePackages.discover
+    kdePackages.dolphin
     kdePackages.elisa
     kdePackages.gwenview
     kdePackages.kate
     kdePackages.kcalc
+    kdePackages.kinfocenter
+    kdePackages.kio-extras
+    kdePackages.partitionmanager
+    libreoffice
     imagemagick
     neovim
+    mpv
+    testdisk
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
