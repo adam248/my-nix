@@ -21,7 +21,7 @@ let
     #davinci-resolve
     comma
     #freecad
-    (flameshot.override { enableWlrSupport = true; }) # does not work on KDE at the moment
+    (flameshot.override { enableWlrSupport = true; })
     #google-chrome
     gpu-screen-recorder
     gpu-screen-recorder-gtk
@@ -108,13 +108,7 @@ in
   hardware.enableAllFirmware = true;
 
   networking.hostName = "nxbx-dsktp"; # Define your hostname.
-
-  # Pick only one of the below networking options.
-  # {
-  #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  # or
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
-  # }
+  networking.networkmanager.enable = true; 
   networking.nameservers = [ "192.168.0.3" ];
   networking.hosts = {
     "192.168.0.1" = [ "router.home" ];
@@ -191,8 +185,8 @@ in
       sddm.autoNumlock = true;
 
       # Enable autologin for a USER
-      #autoLogin.enable = true;
-      #autoLogin.user = "adam";
+      autoLogin.enable = true;
+      autoLogin.user = "adam";
 
       # plasma 6 on xserver
       #defaultSession = "plasmax11";
@@ -248,8 +242,9 @@ in
 
   # Enable CUPS to print documents.
   services.printing.enable = false;
-  services.avahi.enable = true;
-  services.avahi.openFirewall = true;
+
+  #services.avahi.enable = true;
+  #services.avahi.openFirewall = true;
 
   # Enable teamviewer
   services.teamviewer.enable = true;
@@ -525,6 +520,8 @@ in
     #easyeffects # audio effects for pipewire audio
     #htop
     #python3 --disabled due to build error
+
+    appimage-run
 
     bat
     btop # better than btm
