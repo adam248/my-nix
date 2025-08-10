@@ -54,9 +54,15 @@ in
     ];
 
 
+  # Latest Kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Default Kernel
   # Install the latest Linux Kernel available
   # If nothing is specified then the LTS kernal for the current NixOS release is installed
-  boot.kernelPackages = pkgs.linuxPackages;
+  #boot.kernelPackages = pkgs.linuxPackages;
+  # Version Kernel
+  #boot.kernelPackages = pkgs.linuxKernel.packages.linux_3_10
+
   # If mulit--monitor setup is having issues...
   #boot.kernelParams = [
   #  "video=card0-DP-1:2560x1440@144"
@@ -134,7 +140,6 @@ in
   console = {
     packages = [ pkgs.terminus_font ];
     font = "${pkgs.terminus_font}/share/consolefonts/ter-i32b.psf.gz";
-    #keyMap = "us"; # is being declared elsewhere
     useXkbConfig = true; # use xkbOptions in tty.
   };
 
@@ -696,7 +701,7 @@ in
   nix.gc = {
     automatic = true;
     dates = "weekly";
-    options = "--delete-older-than 30d";
+    options = "--delete-older-than 14d";
   };
 }
 
