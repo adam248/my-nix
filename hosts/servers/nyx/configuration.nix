@@ -253,18 +253,16 @@
   };
 
   # The Arr Suite
-  services.prowlarr.enable = true; 	# Prowlarr - torrent and usernet indexer and download manager
-  services.sonarr.enable = true; 	# Sonarr - Series (TV/Anime/Shows) automatic downloader
-  services.radarr.enable = true; 	# Radarr - Movies/Films automatic downloader
-  services.lidarr.enable = true; 	# Lidarr - Music automatic downloader
-  services.readarr.enable = true; 	# Readarr - Books automatic downloader
-
-  services.bazarr.enable = false;   	# Bazarr - Subtitle automatic downloader for Sonarr & Radarr
+  services.prowlarr.enable = true; 	    # Prowlarr - torrent and usernet indexer and download manager
+  services.sonarr.enable = true; 	    # Sonarr - Series (TV/Anime/Shows) automatic downloader
+  services.radarr.enable = true; 	    # Radarr - Movies/Films automatic downloader
+  services.lidarr.enable = true; 	    # Lidarr - Music automatic downloader
+  services.readarr.enable = true; 	    # Readarr - Books automatic downloader
+  services.bazarr.enable = true;       # Bazarr - Subtitle automatic downloader for Sonarr & Radarr
 
   # Arr apps not available on nixos yet
-  #services.overseerr.enable = false;  	# Overseerr - A beautiful request media web app
-  #services.tdarr.enable = false;  	# Tdarr - automatic transcoder
-  #services.mylar3.enable = false;  	# Mylar3 - Comics downloader
+  #services.tdarr.enable = false;  	    # Tdarr - automatic transcoder
+  #services.mylar3.enable = false;      # Mylar3 - Comics downloader
 
   # Arr apps I will not use
   #services.ombi.enable = false;   	# Ombi - simple request movies/tv shows web app

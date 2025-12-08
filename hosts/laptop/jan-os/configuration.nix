@@ -69,6 +69,9 @@
   #security.polkit.enable = true;
   services.udisks2.enable = true; 
   
+  # Auto-update firmware (The only way to update BIOS for Framework [Offical Docs])
+  # eg. https://knowledgebase.frame.work/en_us/framework-laptop-16-bios-and-driver-releases-amd-ryzen-7040-series-BkeqkVovp
+  services.fwupd.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm = { 

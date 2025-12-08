@@ -13,46 +13,60 @@ let
 
   # Unstable packages to be installed with USER
   unstable-pkgs = with pkgs.unstable; [ 
-    anki # Spaced repetion flashcard program (for language learning)
-    authenticator
     #android-studio # too slow at downloading
-    decent-sampler # My very first nixpkgs contrib! Yay!
-    discord
     #davinci-resolve
-    comma
     #freecad
-    (flameshot.override { enableWlrSupport = true; })
     #google-chrome
-    gpu-screen-recorder
-    gpu-screen-recorder-gtk
     #kicad
     #libsForQt5.kwalletmanager
-    ledger-live-desktop
-    lunarvim
-    muse-sounds-manager
     #musescore # trying out the flatpak # musescore 4
-    onlyoffice-bin
-    openai-whisper
     #pika-backup # simple backup software deduplicated backups
     #rambox
-    telegram-desktop
-    tmuxifier
-    webcamoid
-    varia
+    #waydroid #need wayland and see the waydroid nix wiki page for more information
+    (flameshot.override { enableWlrSupport = true; })
+    anki # Spaced repetion flashcard program (for language learning)
+    authenticator
+    code-cursor
+    comma
+    decent-sampler # My very first nixpkgs contrib! Yay!
+    discord
+    gpu-screen-recorder
+    gpu-screen-recorder-gtk
+    ledger-live-desktop
+    lunarvim
+    mangohud
+    mangojuice
+    muse-sounds-manager
+    onlyoffice-desktopeditors
+    openai-whisper
     qbittorrent
     qpwgraph
-    #waydroid #need wayland and see the waydroid nix wiki page for more information
+    telegram-desktop
+    tmuxifier
+    varia
+    webcamoid
+    wireguard-tools
+    wgnord
   ];
 
 in
 
 {
+
   imports = [ 
       ./hardware-configuration.nix # Include the results of the hardware scan.
       <home-manager/nixos> # Include Home Manager - uses home-manager channel (sudo)
-      ./nordvpn.nix # Include custom NordVPN CLI derivation
+      #./nordvpn.nix # Include custom NordVPN CLI derivation
+      ./tdarr.nix # it seems not to work right now
     ];
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      nordvpn = final.callPackage ./nordvpn.nix {
+        libxml2_13 = final.libxml2;
+        };
+      })
+    ];
 
   # Latest Kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -106,9 +120,25 @@ in
   # Install the AMD GPU driver
   boot.initrd.kernelModules = [ "amdgpu" ];
 
+  systemd.tmpfiles.rules = 
+  let
+    rocmEnv = pkgs.symlinkJoin {
+      name = "rocm-combined";
+      paths = with pkgs.rocmPackages; [
+        rocblas
+        hipblas
+        clr
+      ];
+    };
+  in [
+    "L+    /opt/rocm   -    -    -     -    ${rocmEnv}"
+  ];
+
+  hardware.amdgpu.opencl.enable = true;
   hardware.graphics.enable = true;
+  hardware.graphics.package = pkgs.mesa;
   hardware.graphics.extraPackages = with pkgs; [
-    amdvlk
+    #amdvlk
   ];
   hardware.graphics.enable32Bit = true; # Allow 32-bit programs
   hardware.enableAllFirmware = true;
@@ -128,9 +158,9 @@ in
   };
 
   # enable VPN service (currently I have a NordVPN subscription)
-  myypo.services.custom.nordvpn.enable = true;
+  #myypo.services.custom.nordvpn.enable = false;
   # settings recommended in nordvpn.nix derivation
-  networking.firewall.checkReversePath = false;
+  #networking.firewall.checkReversePath = false;
 
   # Set your time zone.
   time.timeZone = "Australia/Perth";
@@ -154,6 +184,7 @@ in
       #  "llama3:8b"         # 4.7 GB
       #  "deepseek-r1:7b"    # 4.7 GB
       #];
+      package = pkgs.ollama-rocm;
     };
 
 
@@ -253,6 +284,17 @@ in
 
   # Enable teamviewer
   services.teamviewer.enable = true;
+
+  # Enable Git and SSH
+  programs.ssh.startAgent = true;
+  programs.git = {
+    enable = true;
+    config = {
+      init = {
+        defaultBranch = "main";
+      };
+    };
+  };
 
   # Enable the ability to run AppImages directly
   programs.appimage.binfmt = true;
@@ -375,6 +417,14 @@ in
   # Run Jackett as a service port 9117
   services.jackett.enable = true;
 
+  # Enable longer logs
+  services.journald = {
+    storage = "persistent";
+    extraConfig = ''
+      SystemMaxUse=500M
+      '';
+  };
+
   # Run Trezor Service
   services.trezord.enable = true;
 
@@ -418,7 +468,6 @@ in
       #authy
       blender
       brave
-      code-cursor
       dropbox
       element-desktop
       feh # light-weight image viewer
@@ -531,6 +580,7 @@ in
     bat
     btop # better than btm
 
+
     kdePackages.akonadi # storage service for PIM data
     kdePackages.discover # for easier flatpak management
     kdePackages.korganizer # Organizational assistant,
@@ -551,8 +601,10 @@ in
     #kup bup # KDE Backup tool & backup + version control
     man # make sure I have man pages available
     mpv
+    ncdu # Disk usage analyzer with an ncurses interface
     nh # NH is a modern helper utility aims to consolidate and reimplement some of the commands from the NixOS ecosystem
     nix
+    nordvpn
     #qpwgraph # using the unstable version
     #onionshare-gui # this is broken on nixos (use flatpak)
     ranger
@@ -568,6 +620,7 @@ in
     vlc
     wget
     wireshark
+    youtubeuploader # Scripted uploads to Youtube using Golang
     zip
 
   ];
@@ -606,6 +659,7 @@ in
       LV2_PATH    = "$HOME/.lv2:$HOME/.nix-profile/lib/lv2:/run/current-system/sw/lib/lv2";
       LXVST_PATH  = "$HOME/.lxvst:$HOME/.nix-profile/lib/lxvst:/run/current-system/sw/lib/lxvst";
       VST_PATH    = "$HOME/.vst:$HOME/.nix-profile/lib/vst:/run/current-system/sw/lib/vst";
+      AMD_VULKAN_ICD = "RADV";
     };
 
   # Required Virt-manager Options
