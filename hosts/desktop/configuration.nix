@@ -60,13 +60,14 @@ in
       ./tdarr.nix # it seems not to work right now
     ];
 
-  nixpkgs.overlays = [
-    (final: prev: {
-      nordvpn = final.callPackage ./nordvpn.nix {
-        libxml2_13 = final.libxml2;
-        };
-      })
-    ];
+  # Broken with 25.11, and waiting for https://github.com/NixOS/nixpkgs/pull/406725 to be merged
+  #nixpkgs.overlays = [
+  #  (final: prev: {
+  #    nordvpn = final.callPackage ./nordvpn.nix {
+  #      libxml2_13 = final.libxml2;
+  #      };
+  #    })
+  #  ];
 
   # Latest Kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -604,7 +605,7 @@ in
     ncdu # Disk usage analyzer with an ncurses interface
     nh # NH is a modern helper utility aims to consolidate and reimplement some of the commands from the NixOS ecosystem
     nix
-    nordvpn
+    #nordvpn #broken in 25.11 waiting for nordvpn to be added to nixpkgs
     #qpwgraph # using the unstable version
     #onionshare-gui # this is broken on nixos (use flatpak)
     ranger
