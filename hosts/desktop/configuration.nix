@@ -57,7 +57,6 @@ in
       ./hardware-configuration.nix # Include the results of the hardware scan.
       <home-manager/nixos> # Include Home Manager - uses home-manager channel (sudo)
       #./nordvpn.nix # Include custom NordVPN CLI derivation
-      ./tdarr.nix # it seems not to work right now
     ];
 
   # Broken with 25.11, and waiting for https://github.com/NixOS/nixpkgs/pull/406725 to be merged
@@ -91,6 +90,28 @@ in
     #"vm.max_map_count" = 2147483642; # value the same as Steam Deck
     "fs.file-max" = 524288; # recommended from star citizen guide
   };
+
+  boot.kernelParams = [
+
+    # Temporary workaround for GPU freezing and hangups
+    # This will help with debugging any future hangups
+    "amdgpu.smu_timeout=0"
+    "amdgpu.dc=0"
+
+  ];
+
+  boot.kernelPatches = [
+
+    # Special Patch (Security downgrade) for SteamVR as Steam runs in a sandbox on NixOS and needs direct access to the GPU to do VR
+    {
+      name = "amdgpu-ignore-ctx-privileges";
+      patch = pkgs.fetchpatch {
+        name = "cap_sys_nice_begone.patch";
+        url = "https://github.com/Frogging-Family/community-patches/raw/master/linux61-tkg/cap_sys_nice_begone.mypatch";
+        hash = "sha256-Y3a0+x2xvHsfLax/uwycdJf3xLxvVfkfDVqjkxNaYEo=";
+      };
+    }
+  ];
 
   boot.loader.timeout = 20;
 
@@ -405,6 +426,11 @@ in
 
   # Enable XBox xbox controllers
   hardware.xpadneo.enable = true;
+
+  # Enable Monado VR OpenXR runtime
+  services.monado = {
+    enable = true;
+  };
 
   # Enable ZSA Moonlander udev rules and such
   hardware.keyboard.zsa.enable = true;
