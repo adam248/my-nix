@@ -24,7 +24,7 @@ let
     #rambox
     #waydroid #need wayland and see the waydroid nix wiki page for more information
     (flameshot.override { enableWlrSupport = true; })
-    anki # Spaced repetion flashcard program (for language learning)
+    #anki #build-failed # Spaced repetion flashcard program (for language learning)
     authenticator
     code-cursor
     comma
@@ -34,8 +34,6 @@ let
     gpu-screen-recorder-gtk
     ledger-live-desktop
     lunarvim
-    mangohud
-    mangojuice
     muse-sounds-manager
     onlyoffice-desktopeditors
     openai-whisper
@@ -92,12 +90,13 @@ in
   };
 
   boot.kernelParams = [
+    "amdgpu.smu_timeout=2000" # Set SMU timeout to 2000 ms
+    "amdgpu.gpu_recovery=1" # 
+    "amdgpu.runpm=0" # Turn OFF runtime power management (more power usage but maybe more stable?)
+    "amdgpu.lockup_timeout=10000"
+    "amdgpu.gfxoff=0" # GPU never goes to sleep when 0
 
-    # Temporary workaround for GPU freezing and hangups
-    # This will help with debugging any future hangups
-    "amdgpu.smu_timeout=0"
-    "amdgpu.dc=0"
-
+    #"amdgpu.dc=0" # this just doesn't work at all
   ];
 
   boot.kernelPatches = [
@@ -139,8 +138,9 @@ in
   boot.loader.systemd-boot.configurationLimit = 42;
   boot.loader.systemd-boot.enable = true;
 
-  # Install the AMD GPU driver
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.initrd.kernelModules = [ 
+    "amdgpu" 
+  ];
 
   systemd.tmpfiles.rules = 
   let
@@ -213,7 +213,7 @@ in
     fstrim.enable = true; # for auto trim of ssds drives
 
     bitcoind."bitcoind" = {
-      enable = true;
+      enable = false;
       dataDir = "/data/bitcoin";
       extraCmdlineOptions = [ 
         "-maxuploadtarget=1024" # Max 1GB upload per day
@@ -231,7 +231,7 @@ in
 
     # Tor - basic setup
     tor = { 
-      enable = true;
+      enable = false;
       client.enable = true;
       controlSocket.enable = true;
     };
@@ -305,7 +305,7 @@ in
   #services.avahi.openFirewall = true;
 
   # Enable teamviewer
-  services.teamviewer.enable = true;
+  services.teamviewer.enable = false;
 
   # Enable Git and SSH
   programs.ssh.startAgent = true;
@@ -338,9 +338,6 @@ in
   };
 
   programs.gamemode.enable = true;
-
-  # Enable Autojump
-  programs.autojump.enable = true;
 
   # Set the default editor
   programs.neovim = {
@@ -436,13 +433,13 @@ in
   hardware.keyboard.zsa.enable = true;
 
   # Enable Ledger Device
-  hardware.ledger.enable = true;
+  hardware.ledger.enable = false;
+
+  # Run Trezor Service
+  services.trezord.enable = true;
 
   # Add .local/bin to PATH
   environment.localBinInPath = true;
-
-  # Run Jackett as a service port 9117
-  services.jackett.enable = true;
 
   # Enable longer logs
   services.journald = {
@@ -451,10 +448,6 @@ in
       SystemMaxUse=500M
       '';
   };
-
-  # Run Trezor Service
-  services.trezord.enable = true;
-
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."adam" = {
@@ -516,6 +509,8 @@ in
       krita
       lazygit
       libreoffice
+      mangohud
+      mangojuice
       #neofetch
       fastfetch
       obs-studio
@@ -529,6 +524,7 @@ in
       rust-analyzer
       scribus # OSS Alt for Publisher / InDesign / Affinity Designer
       shotwell # photo viewer and management
+      sparrow # Bitcoin wallet
       starship # customize shell prompt
       thunderbird
       transcribe
@@ -636,8 +632,10 @@ in
     #onionshare-gui # this is broken on nixos (use flatpak)
     ranger
     ripgrep # required for nvim telescope live-grep
+    #spacetimedb # USE THE CARGO installer via a Rust env!!!
     spice # virt manager helper
     sqlitebrowser
+    stress-ng # Stress testing CPU, GPU, and more
     tldr
     tor-browser
     tree
