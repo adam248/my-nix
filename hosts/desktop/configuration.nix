@@ -26,14 +26,15 @@ let
     (flameshot.override { enableWlrSupport = true; })
     #anki #build-failed # Spaced repetion flashcard program (for language learning)
     authenticator
+    claude-code
     code-cursor
     comma
     decent-sampler # My very first nixpkgs contrib! Yay!
     discord
     gpu-screen-recorder
     gpu-screen-recorder-gtk
+    i2pd
     ledger-live-desktop
-    lunarvim
     muse-sounds-manager
     onlyoffice-desktopeditors
     openai-whisper
@@ -91,9 +92,9 @@ in
 
   boot.kernelParams = [
     "amdgpu.smu_timeout=2000" # Set SMU timeout to 2000 ms
-    "amdgpu.gpu_recovery=1" # 
+    "amdgpu.gpu_recovery=1" # Set GPU recovery to true (attempt recovery if stalled)
     "amdgpu.runpm=0" # Turn OFF runtime power management (more power usage but maybe more stable?)
-    "amdgpu.lockup_timeout=10000"
+    "amdgpu.lockup_timeout=10000" # Give 10 secs to the GPU if it is locked up before crashing
     "amdgpu.gfxoff=0" # GPU never goes to sleep when 0
 
     #"amdgpu.dc=0" # this just doesn't work at all
@@ -102,6 +103,7 @@ in
   boot.kernelPatches = [
 
     # Special Patch (Security downgrade) for SteamVR as Steam runs in a sandbox on NixOS and needs direct access to the GPU to do VR
+    # It also allows me to record my gameplay without having to type my password in
     {
       name = "amdgpu-ignore-ctx-privileges";
       patch = pkgs.fetchpatch {
@@ -120,7 +122,7 @@ in
     size = 16 * 1024; # 16 GB
   }];
 
-  # ZRAM is recommended for star citizen nixos guide
+  # ZRAM is recommended for star citizen nixos guide (TODO: need to install the physical RAM I have waiting in the wings and maybe sell my USED RAM?)
   zramSwap = { 
     enable = true; 
     memoryMax = 16 * 1024 * 1024 * 1024; # 16 GB ZRAM
@@ -157,6 +159,7 @@ in
   ];
 
   hardware.amdgpu.opencl.enable = true;
+  hardware.amdgpu.overdrive.enable = true;
   hardware.graphics.enable = true;
   hardware.graphics.package = pkgs.mesa;
   hardware.graphics.extraPackages = with pkgs; [
@@ -206,7 +209,7 @@ in
       #  "llama3:8b"         # 4.7 GB
       #  "deepseek-r1:7b"    # 4.7 GB
       #];
-      package = pkgs.ollama-rocm;
+      package = pkgs.ollama-vulkan; # or ollama-rocm
     };
 
 
@@ -273,6 +276,9 @@ in
 
 
     };
+
+    lact.enable = true; # GPU Overclocking and extra control
+
   };
 
   # Turn On Numlock for all ttys with systemd 
