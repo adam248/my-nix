@@ -131,6 +131,7 @@ in
   # Enable Scarlett 4i4 for Linux
   boot.extraModprobeConfig = ''
     options snd_usb_audio vid=0x1235 pid=0x8212 device_setup=1
+    install algif_aead /bin/false
   '';
 
   # Use the systemd-boot EFI boot loader.
@@ -143,6 +144,9 @@ in
   boot.initrd.kernelModules = [ 
     "amdgpu" 
   ];
+
+  # Security Patch for CVE-2026-31431 aka. CopyFail
+  boot.blacklistedKernelModules = [ "algif_aead" ];
 
   systemd.tmpfiles.rules = 
   let
@@ -210,6 +214,7 @@ in
       #  "deepseek-r1:7b"    # 4.7 GB
       #];
       package = pkgs.ollama-vulkan; # or ollama-rocm
+      ### vulkan = generic GPU, rocm = AMD
     };
 
 
