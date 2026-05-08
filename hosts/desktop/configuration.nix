@@ -148,7 +148,7 @@ in
     "amdgpu" 
   ];
 
-  # Security Patch for CVE-2026-31431 aka. CopyFail
+  # Security patch for Dirty Frag kernel module exposure
   boot.blacklistedKernelModules = [ 
     "algif_aead" 
     "esp4"
