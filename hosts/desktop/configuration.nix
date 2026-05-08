@@ -129,11 +129,11 @@ in
   }; 
 
   # Enable Scarlett 4i4 for Linux
+  # Security Patch for CVE-2026-31431 aka. CopyFail
+  # & Dirty Frag
   boot.extraModprobeConfig = ''
     options snd_usb_audio vid=0x1235 pid=0x8212 device_setup=1
-    # CopyFail mitigation
     install algif_aead /bin/false
-    # Dirty Frag mitigation
     install esp4 ${pkgs.coreutils}/bin/false
     install esp6 ${pkgs.coreutils}/bin/false
     install rxrpc ${pkgs.coreutils}/bin/false
@@ -150,7 +150,8 @@ in
     "amdgpu" 
   ];
 
-  # Security patches: algif_aead for CopyFail; esp4/esp6/rxrpc for Dirty Frag
+  # Security Patch for CVE-2026-31431 aka. CopyFail
+  # & Dirty Frag
   boot.blacklistedKernelModules = [ 
     "algif_aead" 
     "esp4"
