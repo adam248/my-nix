@@ -2,17 +2,13 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, unstable, ... }:
 
 let
   user = "adam"; # currently unused but if you want to use this variable do this: ${user}
 
-  unstableTarball =
-    fetchTarball
-      "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-
   # Unstable packages to be installed with USER
-  unstable-pkgs = with pkgs.unstable; [ 
+  unstable-pkgs = with unstable; [ 
     #android-studio # too slow at downloading
     #davinci-resolve
     #freecad
@@ -24,21 +20,21 @@ let
     #rambox
     #waydroid #need wayland and see the waydroid nix wiki page for more information
     (flameshot.override { enableWlrSupport = true; })
-    anki # Spaced repetion flashcard program (for language learning)
+    #anki #build-failed # Spaced repetion flashcard program (for language learning)
     authenticator
+    beyond-all-reason
+    claude-code
     code-cursor
     comma
     decent-sampler # My very first nixpkgs contrib! Yay!
     discord
     gpu-screen-recorder
     gpu-screen-recorder-gtk
+    i2pd
     ledger-live-desktop
-    lunarvim
-    mangohud
-    mangojuice
     muse-sounds-manager
     onlyoffice-desktopeditors
-    openai-whisper
+    #openai-whisper # maybe building openblas which takes a long time to compile
     qbittorrent
     qpwgraph
     telegram-desktop
@@ -55,17 +51,18 @@ in
 
   imports = [ 
       ./hardware-configuration.nix # Include the results of the hardware scan.
-      <home-manager/nixos> # Include Home Manager - uses home-manager channel (sudo)
       #./nordvpn.nix # Include custom NordVPN CLI derivation
-      ./tdarr.nix # it seems not to work right now
     ];
 
   nixpkgs.overlays = [
+
+    # OpenBlas takes too long to test, i think due to incorrect hardware ID from its test suite
     (final: prev: {
-      nordvpn = final.callPackage ./nordvpn.nix {
-        libxml2_13 = final.libxml2;
-        };
+      openblas = prev.openblas.overrideAttrs (_: {
+        doCheck = false;
+        });
       })
+
     ];
 
   # Latest Kernel
@@ -91,6 +88,30 @@ in
     "fs.file-max" = 524288; # recommended from star citizen guide
   };
 
+  boot.kernelParams = [
+    "amdgpu.smu_timeout=2000" # Set SMU timeout to 2000 ms
+    "amdgpu.gpu_recovery=1" # Set GPU recovery to true (attempt recovery if stalled)
+    "amdgpu.runpm=0" # Turn OFF runtime power management (more power usage but maybe more stable?)
+    "amdgpu.lockup_timeout=10000" # Give 10 secs to the GPU if it is locked up before crashing
+    "amdgpu.gfxoff=0" # GPU never goes to sleep when 0
+
+    #"amdgpu.dc=0" # this just doesn't work at all
+  ];
+
+  boot.kernelPatches = [
+
+    # Special Patch (Security downgrade) for SteamVR as Steam runs in a sandbox on NixOS and needs direct access to the GPU to do VR
+    # It also allows me to record my gameplay without having to type my password in so 2 birds with 1 stone?
+    {
+      name = "amdgpu-ignore-ctx-privileges";
+      patch = pkgs.fetchpatch {
+        name = "cap_sys_nice_begone.patch";
+        url = "https://github.com/Frogging-Family/community-patches/raw/master/linux61-tkg/cap_sys_nice_begone.mypatch";
+        hash = "sha256-Y3a0+x2xvHsfLax/uwycdJf3xLxvVfkfDVqjkxNaYEo=";
+      };
+    }
+  ];
+
   boot.loader.timeout = 20;
 
   # SWAP is needed for Star Citizen
@@ -99,15 +120,22 @@ in
     size = 16 * 1024; # 16 GB
   }];
 
-  # ZRAM is recommended for star citizen nixos guide
+  # ZRAM is recommended for star citizen nixos guide (TODO: need to install the physical RAM I have waiting in the wings and maybe sell my USED RAM?)
   zramSwap = { 
     enable = true; 
     memoryMax = 16 * 1024 * 1024 * 1024; # 16 GB ZRAM
   }; 
 
-  # Enable Scarlett 4i4 for Linux
   boot.extraModprobeConfig = ''
+    # Enable Scarlett 4i4 for Linux
     options snd_usb_audio vid=0x1235 pid=0x8212 device_setup=1
+
+    # Security Patch for CVE-2026-31431 aka. CopyFail
+    # & Dirty Frag
+    install algif_aead /bin/false
+    install esp4 ${pkgs.coreutils}/bin/false
+    install esp6 ${pkgs.coreutils}/bin/false
+    install rxrpc ${pkgs.coreutils}/bin/false
   '';
 
   # Use the systemd-boot EFI boot loader.
@@ -117,8 +145,19 @@ in
   boot.loader.systemd-boot.configurationLimit = 42;
   boot.loader.systemd-boot.enable = true;
 
-  # Install the AMD GPU driver
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.initrd.kernelModules = [ 
+    "amdgpu" 
+  ];
+
+  boot.blacklistedKernelModules = [ 
+    # Security Patch for CVE-2026-31431 aka. CopyFail
+    "algif_aead" 
+
+    # & Dirty Frag
+    "esp4"
+    "esp6"
+    "rxrpc"
+  ];
 
   systemd.tmpfiles.rules = 
   let
@@ -135,6 +174,7 @@ in
   ];
 
   hardware.amdgpu.opencl.enable = true;
+  hardware.amdgpu.overdrive.enable = true;
   hardware.graphics.enable = true;
   hardware.graphics.package = pkgs.mesa;
   hardware.graphics.extraPackages = with pkgs; [
@@ -175,6 +215,7 @@ in
 
   services = {
 
+
     ollama = {
       enable = true;
       # loadModels not available in 24.05
@@ -184,14 +225,15 @@ in
       #  "llama3:8b"         # 4.7 GB
       #  "deepseek-r1:7b"    # 4.7 GB
       #];
-      package = pkgs.ollama-rocm;
+      package = pkgs.ollama-vulkan; # or ollama-rocm
+      ### vulkan = generic GPU, rocm = AMD
     };
 
 
     fstrim.enable = true; # for auto trim of ssds drives
 
     bitcoind."bitcoind" = {
-      enable = true;
+      enable = false;
       dataDir = "/data/bitcoin";
       extraCmdlineOptions = [ 
         "-maxuploadtarget=1024" # Max 1GB upload per day
@@ -209,7 +251,7 @@ in
 
     # Tor - basic setup
     tor = { 
-      enable = true;
+      enable = false;
       client.enable = true;
       controlSocket.enable = true;
     };
@@ -251,6 +293,9 @@ in
 
 
     };
+
+    lact.enable = true; # GPU Overclocking and extra control
+
   };
 
   # Turn On Numlock for all ttys with systemd 
@@ -283,7 +328,10 @@ in
   #services.avahi.openFirewall = true;
 
   # Enable teamviewer
-  services.teamviewer.enable = true;
+  services.teamviewer.enable = false;
+
+  programs.localsend.enable = true; # quick file sharing
+
 
   # Enable Git and SSH
   programs.ssh.startAgent = true;
@@ -316,9 +364,6 @@ in
   };
 
   programs.gamemode.enable = true;
-
-  # Enable Autojump
-  programs.autojump.enable = true;
 
   # Set the default editor
   programs.neovim = {
@@ -360,7 +405,7 @@ in
           harpoon
           nvim-treesitter.withAllGrammars
           kotlin-vim
-          fugitive
+          vim-fugitive
           nvim-lint
           {
               plugin = nvim-lspconfig;
@@ -405,17 +450,22 @@ in
   # Enable XBox xbox controllers
   hardware.xpadneo.enable = true;
 
+  # Enable Monado VR OpenXR runtime
+  services.monado = {
+    enable = true;
+  };
+
   # Enable ZSA Moonlander udev rules and such
   hardware.keyboard.zsa.enable = true;
 
   # Enable Ledger Device
-  hardware.ledger.enable = true;
+  hardware.ledger.enable = false;
+
+  # Run Trezor Service
+  services.trezord.enable = true;
 
   # Add .local/bin to PATH
   environment.localBinInPath = true;
-
-  # Run Jackett as a service port 9117
-  services.jackett.enable = true;
 
   # Enable longer logs
   services.journald = {
@@ -424,10 +474,6 @@ in
       SystemMaxUse=500M
       '';
   };
-
-  # Run Trezor Service
-  services.trezord.enable = true;
-
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users."adam" = {
@@ -444,7 +490,7 @@ in
       (lutris.override {
         extraPkgs = pkgs: [
           # List package dependencies here
-          wineWowPackages.stable
+          wineWow64Packages.stable
           winetricks
         ];
       })
@@ -489,6 +535,8 @@ in
       krita
       lazygit
       libreoffice
+      mangohud
+      mangojuice
       #neofetch
       fastfetch
       obs-studio
@@ -497,11 +545,12 @@ in
       oh-my-git
       piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
       qdirstat
-      realvnc-vnc-viewer
+      #realvnc-vnc-viewer # failed to build when switching to flakes/26.05
       reaper 
       rust-analyzer
       scribus # OSS Alt for Publisher / InDesign / Affinity Designer
       shotwell # photo viewer and management
+      sparrow # Bitcoin wallet
       starship # customize shell prompt
       thunderbird
       transcribe
@@ -524,15 +573,8 @@ in
   };
 
 
-  home-manager.users."adam" = { pkgs, ... }: {
-    home.stateVersion = "23.05";
-    home.packages = with pkgs; [
-      typst # Modern Markdown to PDF (Better than LaTeX)
-    ];
-  };
-
   # Enable Flatpak and helper services
-  services.flatpak.enable = true;
+  services.flatpak.enable = true; 
   services.dbus.enable = true;
   xdg.portal= {
     enable = true;
@@ -604,13 +646,15 @@ in
     ncdu # Disk usage analyzer with an ncurses interface
     nh # NH is a modern helper utility aims to consolidate and reimplement some of the commands from the NixOS ecosystem
     nix
-    nordvpn
+    #nordvpn #broken in 25.11 waiting for nordvpn to be added to nixpkgs
     #qpwgraph # using the unstable version
     #onionshare-gui # this is broken on nixos (use flatpak)
     ranger
     ripgrep # required for nvim telescope live-grep
+    #spacetimedb # USE THE CARGO installer via a Rust env!!!
     spice # virt manager helper
     sqlitebrowser
+    stress-ng # Stress testing CPU, GPU, and more
     tldr
     tor-browser
     tree
@@ -690,6 +734,8 @@ in
 
   # List services that you want to enable:
 
+  powerManagement.cpuFreqGovernor = "performance";
+
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
@@ -710,7 +756,6 @@ in
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
-  system.copySystemConfiguration = true;
   system.autoUpgrade = {
     enable = true;
     allowReboot = false;
@@ -728,11 +773,6 @@ in
   nixpkgs.config = {
     # Allow unfree packages
     allowUnfree = true;
-    packageOverrides = pkgs: {
-      unstable = import unstableTarball {
-        config = config.nixpkgs.config;
-      };
-    };
     permittedInsecurePackages = [
                 "openssl-1.1.1w"
                 "openssl-1.1.1u"

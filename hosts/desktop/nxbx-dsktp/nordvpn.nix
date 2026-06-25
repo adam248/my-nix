@@ -1,148 +1,176 @@
 {
-  config,
+  appendOverlays,
+  buildGoModule,
+  copyDesktopItems,
+  e2fsprogs,
+  fetchFromGitHub,
+  iproute2,
+  iptables,
   lib,
-  pkgs,
-  ...
-}: let
-  nordVpnPkg = pkgs.callPackage ({
-    autoPatchelfHook,
-    buildFHSEnvChroot,
-    dpkg,
-    fetchurl,
-    lib,
-    stdenv,
-    sysctl,
-    iptables,
-    iproute2,
-    procps,
-    cacert,
-    libcap_ng,
-    libnl,
-    libxml2,
-    libidn2,
-    zlib,
-    wireguard-tools,
-  }: let
-    pname = "nordvpn";
-    version = "3.20.1";
+  libxml2_13,
+  makeDesktopItem,
+  makeWrapper,
+  openvpn,
+  pkg-config,
+  procps,
+  systemdMinimal,
+  wireguard-tools,
+}:
 
-    nordVPNBase = stdenv.mkDerivation {
-      inherit pname version;
+let
+  tunnelblickSrc = fetchFromGitHub {
+    owner = "Tunnelblick";
+    repo = "Tunnelblick";
+    tag = "v8.0";
+    hash = "sha256-Kj/F7hI6E+giT+4iGDUjXCLgy/6jcohtTWtLXOpZfo0=";
+  };
 
-      src = fetchurl {
-        url = "https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/n/nordvpn/nordvpn_${version}_amd64.deb";
-        hash = "sha256-RJoI3G4Tr3272CZ/lI9HEfKXdwuwPzWlrOKm9taIjuU=";
-      };
+  patchedOpenvpn = openvpn.overrideAttrs (old: {
+    patches =
+      (old.patches or [ ])
+      ++ (lib.map
+        (fname: "${tunnelblickSrc}/third_party/sources/openvpn/openvpn-${old.version}/patches/${fname}")
+        [
+          "02-tunnelblick-openvpn_xorpatch-a.diff"
+          "03-tunnelblick-openvpn_xorpatch-b.diff"
+          "04-tunnelblick-openvpn_xorpatch-c.diff"
+          "05-tunnelblick-openvpn_xorpatch-d.diff"
+          "06-tunnelblick-openvpn_xorpatch-e.diff"
+        ]
+      );
+  });
 
-      buildInputs = [libxml2 libidn2];
-      nativeBuildInputs = [dpkg autoPatchelfHook stdenv.cc.cc.lib libnl libcap_ng];
-
-      dontConfigure = true;
-      dontBuild = true;
-
-      unpackPhase = ''
-        runHook preUnpack
-        dpkg --extract $src .
-        runHook postUnpack
-      '';
-
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out
-        mv usr/* $out/
-        mv var/ $out/
-        mv etc/ $out/
-        runHook postInstall
-      '';
-    };
-
-    nordVPNfhs = buildFHSEnvChroot {
-      name = "nordvpnd";
-      runScript = "nordvpnd";
-
-      # hardcoded path to /sbin/ip
-      targetPkgs = pkgs: [
-        nordVPNBase
-        sysctl
-        iptables
-        iproute2
-        procps
-        cacert
-        libxml2
-        libidn2
-        zlib
-        wireguard-tools
-      ];
-    };
-  in
-    stdenv.mkDerivation {
-      inherit pname version;
-
-      dontUnpack = true;
-      dontConfigure = true;
-      dontBuild = true;
-
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out/bin $out/share
-        ln -s ${nordVPNBase}/bin/nordvpn $out/bin
-        ln -s ${nordVPNfhs}/bin/nordvpnd $out/bin
-        ln -s ${nordVPNBase}/share/* $out/share/
-        ln -s ${nordVPNBase}/var $out/
-        runHook postInstall
-      '';
-
-      meta = with lib; {
-        description = "CLI client for NordVPN";
-        homepage = "https://www.nordvpn.com";
-        license = licenses.unfreeRedistributable;
-        maintainers = with maintainers; [dr460nf1r3];
-        platforms = ["x86_64-linux"];
-      };
-    }) {};
 in
-  with lib; {
-    options.myypo.services.custom.nordvpn.enable = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Whether to enable the NordVPN daemon. Note that you'll have to set
-        `networking.firewall.checkReversePath = false;`, add UDP 1194
-        and TCP 443 to the list of allowed ports in the firewall and add your
-        user to the "nordvpn" group (`users.users.<username>.extraGroups`).
-      '';
-    };
+buildGoModule (finalAttrs: {
+  pname = "nordvpn";
+  version = "4.2.0";
 
-    config = mkIf config.myypo.services.custom.nordvpn.enable {
-      networking.firewall.checkReversePath = false;
+  src = fetchFromGitHub {
+    owner = "NordSecurity";
+    repo = "nordvpn-linux";
+    tag = finalAttrs.version;
+    hash = "sha256-9uh/UkOS84tVeW/d6qQ6bYPXzGXEoD21QHzrcMcdj7M=";
+  };
 
-      environment.systemPackages = [nordVpnPkg];
+  nativeBuildInputs = [
+    copyDesktopItems
+    makeWrapper
+    pkg-config
+  ];
 
-      users.groups.nordvpn = {};
-      users.groups.nordvpn.members = [ "myypo" ];
-      systemd = {
-        services.nordvpn = {
-          description = "NordVPN daemon.";
-          serviceConfig = {
-            ExecStart = "${nordVpnPkg}/bin/nordvpnd";
-            ExecStartPre = pkgs.writeShellScript "nordvpn-start" ''
-              mkdir -m 700 -p /var/lib/nordvpn;
-              if [ -z "$(ls -A /var/lib/nordvpn)" ]; then
-                cp -r ${nordVpnPkg}/var/lib/nordvpn/* /var/lib/nordvpn;
-              fi
-            '';
-            NonBlocking = true;
-            KillMode = "process";
-            Restart = "on-failure";
-            RestartSec = 5;
-            RuntimeDirectory = "nordvpn";
-            RuntimeDirectoryMode = "0750";
-            Group = "nordvpn";
-          };
-          wantedBy = ["multi-user.target"];
-          after = ["network-online.target"];
-          wants = ["network-online.target"];
-        };
-      };
-    };
-  }
+  buildInputs = [
+    # cgo build dependencies go here
+    # https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/go.section.md#envcgo_enabled-var-go-cgo_enabled
+    # libxml2 2.14.[0-4] breaks daemon
+    libxml2_13
+  ];
+
+  vendorHash = "sha256-eUM69CQjbML8fWRG8H3w6x4M+E51YrXX/UCUFHerQmM=";
+
+  modPostBuild = ''
+    patch -p0 < ${./gokogiri-xpath-expression.patch}
+  '';
+
+  preBuild = ''
+    # use path $out/bin instead of /usr/lib
+    substituteInPlace internal/constants.go --replace-fail /usr/lib/nordvpn "$out/bin"
+
+    # use path <<openvpnPatch>>/bin/openvpn instead of /usr/lib/nordvpn/openvpn
+    old_ovpn_path='filepath.Join(internal.AppDataPathStatic, "openvpn")'
+    new_ovpn_path=\"${patchedOpenvpn}/bin/openvpn\"
+    substituteInPlace daemon/vpn/openvpn/config.go --replace-fail "$old_ovpn_path" "$new_ovpn_path"
+  '';
+
+  ldflags = [
+    "-X main.Environment=prod"
+    "-X main.Hash=${finalAttrs.version}"
+    # changing the salt would result in nordvpnd crash for existing users
+    "-X main.Salt=f1nd1ngn3m0"
+    "-X main.Version=${finalAttrs.version}"
+  ];
+
+  subPackages = [
+    "cmd/cli"
+    "cmd/daemon"
+    "cmd/norduser"
+  ];
+
+  doCheck = true;
+
+  checkPhase = ''
+    runHook preCheck
+
+    go test ./cli
+    # skip tests that require network access
+    go test ./daemon -skip 'TestTransports|TestH1Transport_RoundTrip'
+    go test ./norduser
+
+    runHook postCheck
+  '';
+
+  postInstall = ''
+    # rename to standard names
+    BIN_DIR=$out/bin
+    install $BIN_DIR/cli $BIN_DIR/nordvpn
+    install $BIN_DIR/daemon $BIN_DIR/nordvpnd
+    install $BIN_DIR/norduser $BIN_DIR/norduserd
+    rm $BIN_DIR/{cli,daemon,norduser}
+
+    # nordvpn needs icons for the system tray and notifications
+    ASSETS_PATH=$out/share/icons/hicolor/scalable/apps
+    install -D assets/icon.svg $ASSETS_PATH/nordvpn.svg
+    for file in assets/*; do
+      install "$file" "$ASSETS_PATH/nordvpn-$(basename $file)"
+    done
+  '';
+
+  postFixup = ''
+    wrapProgram $out/bin/nordvpnd --set PATH ${
+      lib.makeBinPath [
+        e2fsprogs
+        iproute2
+        iptables
+        patchedOpenvpn
+        procps
+        systemdMinimal
+        wireguard-tools
+      ]
+    }
+  '';
+
+  desktopItems = [
+    (makeDesktopItem {
+      categories = [ "Network" ];
+      comment = finalAttrs.meta.description;
+      desktopName = "nordvpn";
+      exec = "nordvpn click %u";
+      icon = "nordvpn";
+      mimeTypes = [ "x-scheme-handler/nordvpn" ];
+      name = "nordvpn";
+      terminal = true;
+      type = "Application";
+    })
+  ];
+
+  meta = {
+    description = "NordVPN application for Linux";
+    longDescription = ''
+      NordVPN application for Linux.
+      This package currently does not support meshnet.
+      Additionally, if you enable firewall via `networking.firewall.enable = true;`,
+      then you should also set `networking.firewall.checkReversePath = "loose";`.
+      Example usage:
+      ```
+      sudo nordvpnd
+      sudo chown myuser:nordvpn /run/nordvpn/nordvpnd.sock
+      nordvpn c
+      ```
+      Contributions welcome!
+    '';
+    homepage = "https://github.com/nordsecurity/nordvpn-linux";
+    license = lib.licenses.gpl3Only;
+    maintainers = with lib.maintainers; [ different-error ];
+    platforms = lib.platforms.linux;
+  };
+})
+

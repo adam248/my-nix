@@ -2,17 +2,13 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, unstable, ... }:
 
 let
   user = "adam"; # currently unused but if you want to use this variable do this: ${user}
 
-  unstableTarball =
-    fetchTarball
-      "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-
   # Unstable packages to be installed with USER
-  unstable-pkgs = with pkgs.unstable; [ 
+  unstable-pkgs = with unstable; [ 
     #android-studio # too slow at downloading
     #davinci-resolve
     #freecad
@@ -26,6 +22,7 @@ let
     (flameshot.override { enableWlrSupport = true; })
     #anki #build-failed # Spaced repetion flashcard program (for language learning)
     authenticator
+    beyond-all-reason
     claude-code
     code-cursor
     comma
@@ -54,7 +51,6 @@ in
 
   imports = [ 
       ./hardware-configuration.nix # Include the results of the hardware scan.
-      <home-manager/nixos> # Include Home Manager - uses home-manager channel (sudo)
       #./nordvpn.nix # Include custom NordVPN CLI derivation
     ];
 
@@ -103,7 +99,7 @@ in
   boot.kernelPatches = [
 
     # Special Patch (Security downgrade) for SteamVR as Steam runs in a sandbox on NixOS and needs direct access to the GPU to do VR
-    # It also allows me to record my gameplay without having to type my password in
+    # It also allows me to record my gameplay without having to type my password in so 2 birds with 1 stone?
     {
       name = "amdgpu-ignore-ctx-privileges";
       patch = pkgs.fetchpatch {
@@ -128,11 +124,12 @@ in
     memoryMax = 16 * 1024 * 1024 * 1024; # 16 GB ZRAM
   }; 
 
-  # Enable Scarlett 4i4 for Linux
-  # Security Patch for CVE-2026-31431 aka. CopyFail
-  # & Dirty Frag
   boot.extraModprobeConfig = ''
+    # Enable Scarlett 4i4 for Linux
     options snd_usb_audio vid=0x1235 pid=0x8212 device_setup=1
+
+    # Security Patch for CVE-2026-31431 aka. CopyFail
+    # & Dirty Frag
     install algif_aead /bin/false
     install esp4 ${pkgs.coreutils}/bin/false
     install esp6 ${pkgs.coreutils}/bin/false
@@ -150,10 +147,11 @@ in
     "amdgpu" 
   ];
 
-  # Security Patch for CVE-2026-31431 aka. CopyFail
-  # & Dirty Frag
   boot.blacklistedKernelModules = [ 
+    # Security Patch for CVE-2026-31431 aka. CopyFail
     "algif_aead" 
+
+    # & Dirty Frag
     "esp4"
     "esp6"
     "rxrpc"
@@ -214,6 +212,7 @@ in
   };
 
   services = {
+
 
     ollama = {
       enable = true;
@@ -328,6 +327,9 @@ in
 
   # Enable teamviewer
   services.teamviewer.enable = false;
+
+  programs.localsend.enable = true; # quick file sharing
+
 
   # Enable Git and SSH
   programs.ssh.startAgent = true;
@@ -569,13 +571,6 @@ in
   };
 
 
-  home-manager.users."adam" = { pkgs, ... }: {
-    home.stateVersion = "23.05";
-    home.packages = with pkgs; [
-      typst # Modern Markdown to PDF (Better than LaTeX)
-    ];
-  };
-
   # Enable Flatpak and helper services
   services.flatpak.enable = true; 
   services.dbus.enable = true;
@@ -759,7 +754,6 @@ in
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
-  system.copySystemConfiguration = true;
   system.autoUpgrade = {
     enable = true;
     allowReboot = false;
@@ -777,11 +771,6 @@ in
   nixpkgs.config = {
     # Allow unfree packages
     allowUnfree = true;
-    packageOverrides = pkgs: {
-      unstable = import unstableTarball {
-        config = config.nixpkgs.config;
-      };
-    };
     permittedInsecurePackages = [
                 "openssl-1.1.1w"
                 "openssl-1.1.1u"

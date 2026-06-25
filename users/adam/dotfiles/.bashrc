@@ -4,6 +4,7 @@ eval "$(starship init bash)"
 # Aliases
 # Manage NixOS system configurations and updates
 alias config='sudo vim /etc/nixos/configuration.nix'
+alias configf='sudo vim /etc/nixos/flake.nix'
 alias hconfig='sudo vim /etc/nixos/hardware-configuration.nix'
 #alias update='sudo nixos-rebuild switch'
 
@@ -133,8 +134,8 @@ function backupnix {
 function update {
 	echo "flatpak update"
 	flatpak update
-	echo "sudo nixos-rebuild switch"
-	sudo nixos-rebuild switch
+	echo "sudo nixos-rebuild build --flake /etc/nixos#nixos switch"
+	sudo nixos-rebuild build --flake /etc/nixos#nixos switch
 	source ~/.bashrc
 	backupnix
 	echo "Backed up configs to ~/my-nix | REMEMBER TO 'git push' to GitHub"
@@ -208,10 +209,7 @@ function fixnet {
 
 # Upgrade the entire system
 function upgrade {
-	sudo nix-channel --update
-	sudo nixos-rebuild switch --upgrade
-	backupnix
-	echo "Backed up configs to ~/my-nix | REMEMBER TO 'git push' to GitHub"
+	echo "YOU HAVE SWITCHED TO FLAKES NOW, PLEASE JUST UPGRADE THE FLAKE.NIX FILE"
 }
 
 
