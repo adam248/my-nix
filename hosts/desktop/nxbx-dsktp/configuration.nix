@@ -787,8 +787,12 @@ in
   nix.settings.auto-optimise-store = true;
 
   nix.settings = {
-    substituters = [ "https://nix-citizen.cachix.org" ];
-    trusted-public-keys = [ "nix-citizen.cachix.org-1:lPMkWc2X8XD4/7YPEEwXKKBg+SVbYTVrAaLA2wQTKCo=" ];
+    # Keep builds memory-safe: one derivation, one core at a time.
+    max-jobs = 1;
+    cores = 1;
+    # Add third-party cache without disabling the default cache.nixos.org.
+    extra-substituters = [ "https://nix-citizen.cachix.org" ];
+    extra-trusted-public-keys = [ "nix-citizen.cachix.org-1:lPMkWc2X8XD4/7YPEEwXKKBg+SVbYTVrAaLA2wQTKCo=" ];
   };
 
   # Automate Nix garbage collection
