@@ -54,6 +54,15 @@ in
       #./nordvpn.nix # Include custom NordVPN CLI derivation
     ];
 
+  nixpkgs.overlays = [
+    # OpenBLAS checks are slow here and can fail when the test suite mis-detects CPU.
+    (final: prev: {
+      openblas = prev.openblas.overrideAttrs (_: {
+        doCheck = false;
+      });
+    })
+  ];
+
   # Latest kernel, compiled for this machine's CPU (CONFIG_X86_NATIVE_CPU).
   # Scoped to boot.kernelPackages only so userspace packages keep matching
   # binary cache derivations; only the kernel and its module set rebuild.
