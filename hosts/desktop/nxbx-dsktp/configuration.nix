@@ -21,28 +21,29 @@ let
     #waydroid #need wayland and see the waydroid nix wiki page for more information
     (flameshot.override { enableWlrSupport = true; })
     #anki #build-failed # Spaced repetion flashcard program (for language learning)
-    authenticator
-    beyond-all-reason
-    claude-code
+
+    #authenticator
+    #beyond-all-reason
+    #claude-code
     code-cursor
-    comma
-    decent-sampler # My very first nixpkgs contrib! Yay!
-    discord
-    gpu-screen-recorder
-    gpu-screen-recorder-gtk
-    i2pd
-    ledger-live-desktop
-    muse-sounds-manager
-    onlyoffice-desktopeditors
+    #comma
+    #decent-sampler # My very first nixpkgs contrib! Yay!
+    #discord
+    #gpu-screen-recorder
+    #gpu-screen-recorder-gtk
+    #i2pd
+    #ledger-live-desktop
+    #muse-sounds-manager
+    #onlyoffice-desktopeditors
     #openai-whisper # maybe building openblas which takes a long time to compile
-    qbittorrent
-    qpwgraph
+    #qbittorrent
+    #qpwgraph
     telegram-desktop
-    tmuxifier
-    varia
-    webcamoid
-    wireguard-tools
-    wgnord
+    #tmuxifier
+    #varia
+    #webcamoid
+    #wireguard-tools
+    #wgnord
   ];
 
 in
@@ -501,68 +502,56 @@ in
         ];
       })
 
-      ## Playwright CLI build
-      #(runCommand "wrapped-playwright" { buildInputs = [ makeWrapper ]; }
-      #''
-      #mkdir -p "$out/bin"
-      #makeWrapper "${playwright}/bin/playwright" "$out/bin/playwright" \
-      #  --set PLAYWRIGHT_BROWSERS_PATH "${playwright.browsers}"
-      #'')
-
-      # this needs a wrapper to run `plasma-discover --backends flathub`
-      #libsForQt5.discover
-
 
       # Stable Packages
-      alsa-lib freetype
-      alsa-utils alsa-scarlett-gui # audio management
-      audacity
+      #alsa-lib freetype
+      #alsa-utils alsa-scarlett-gui # audio management
+      #audacity
       #authy
-      blender
+      #blender
       brave
-      dropbox
-      element-desktop
-      feh # light-weight image viewer
+      #dropbox
+      #element-desktop
+      #feh # light-weight image viewer
       #flameshot # screenshots
-      gh # Github CLI tool
+      #gh # Github CLI tool
       #gimp - use the flatpak version (because it updated to 3.0 first)
-      github-desktop
-      gitkraken
-      gnuradio
-      google-chrome
-      guitarix # Guitar Amp Emulator
-      handbrake
-      imagemagick
-      inkscape
-      kdePackages.kdenlive
+      #github-desktop
+      #gitkraken
+      #gnuradio
+      #google-chrome
+      #guitarix # Guitar Amp Emulator
+      #handbrake
+      #imagemagick
+      #inkscape
+      #kdePackages.kdenlive
       keepass xdotool
       keymapp # moonlander ZSA app
-      kid3 # Audio file meta data editor
-      krita
-      lazygit
+      #kid3 # Audio file meta data editor
+      #krita
+      #lazygit
       #libreoffice # temporarily disabled: very long source build
       mangohud
       mangojuice
-      #neofetch
       fastfetch
-      obs-studio
-      obsidian
-      openttd
-      oh-my-git
-      piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
-      qdirstat
+      #obs-studio
+      #obsidian
+      #openttd
+      #oh-my-git
+      #piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
+      #qdirstat
       #realvnc-vnc-viewer # failed to build when switching to flakes/26.05
-      reaper 
-      rust-analyzer
-      scribus # OSS Alt for Publisher / InDesign / Affinity Designer
-      shotwell # photo viewer and management
-      sparrow # Bitcoin wallet
-      starship # customize shell prompt
-      thunderbird
-      transcribe
+      #reaper 
+      #rust-analyzer
+      #scribus # OSS Alt for Publisher / InDesign / Affinity Designer
+      #shotwell # photo viewer and management
+      #sparrow # Bitcoin wallet
+      #starship # customize shell prompt
+      #thunderbird
+      #transcribe
       trezor-suite trezor-udev-rules
-      units
-      vscode
+      #units
+      #vscode
       xclip # easy copy to clipboard from console
       yt-dlp
 
@@ -618,7 +607,6 @@ in
   # $ nix search wget
   # Available to all users (including root)
   environment.systemPackages = with pkgs; [
-    #bottom # kewler than htop (use btm to run)
     #easyeffects # audio effects for pipewire audio
     #htop
     #python3 --disabled due to build error
@@ -629,12 +617,12 @@ in
     btop # better than btm
 
 
-    kdePackages.akonadi # storage service for PIM data
-    kdePackages.discover # for easier flatpak management
-    kdePackages.korganizer # Organizational assistant,
-    kdePackages.okular # universal document viewer (replacing gwenviewer)
-    kdePackages.spectacle # screenshot application
-    kdePackages.kcharselect # Tool to select and copy special characters
+    #kdePackages.akonadi # storage service for PIM data
+    #kdePackages.discover # for easier flatpak management
+    #kdePackages.korganizer # Organizational assistant,
+    #kdePackages.okular # universal document viewer (replacing gwenviewer)
+    #kdePackages.spectacle # screenshot application
+    #kdePackages.kcharselect # Tool to select and copy special characters
 
     eza #exa replacement # ls replacement
     fd # required for nvim telescope
@@ -662,15 +650,15 @@ in
     sqlitebrowser
     stress-ng # Stress testing CPU, GPU, and more
     tldr
-    tor-browser
+    #tor-browser
     tree
     #trickle # broken in 25.05
     unzip
     virt-manager
     vlc
     wget
-    wireshark
-    youtubeuploader # Scripted uploads to Youtube using Golang
+    #wireshark
+    #youtubeuploader # Scripted uploads to Youtube using Golang
     zip
 
   ];
