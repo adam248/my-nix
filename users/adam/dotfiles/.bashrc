@@ -3,8 +3,8 @@ eval "$(starship init bash)"
 
 # Aliases
 # Manage NixOS system configurations and updates
-alias config='sudo vim /etc/nixos/configuration.nix'
-alias configf='sudo vim /etc/nixos/flake.nix'
+alias config='sudo vim ~/my-nix/my-nix/hosts/desktop/nxbx-dsktp/configuration.nix'
+alias configf='sudo vim ~/my-nix/my-nix/hosts/desktop/nxbx-dsktp/flake.nix'
 alias hconfig='sudo vim /etc/nixos/hardware-configuration.nix'
 #alias update='sudo nixos-rebuild switch'
 
@@ -125,8 +125,7 @@ function mc {
 }
 
 function backupnix {
-	cp /etc/nixos/configuration.nix ~/my-nix/hosts/desktop/
-	cp /etc/nixos/hardware-configuration.nix ~/my-nix/hosts/desktop/
+	sudo rsync -avh --delete /home/adam/my-nix/hosts/desktop/nxbx-dsktp/ /etc/nixos/
 	cp ~/.bashrc ~/my-nix/users/adam/dotfiles/
 	cp ~/.profile ~/my-nix/users/adam/dotfiles/
 }
@@ -134,8 +133,14 @@ function backupnix {
 function update {
 	echo "flatpak update"
 	flatpak update
+
+	echo "sudo rsync -avh --delete /home/adam/my-nix/hosts/desktop/nxbx-dsktp/ /etc/nixos/"
+    sudo rsync -avh --delete /home/adam/my-nix/hosts/desktop/nxbx-dsktp/ /etc/nixos/
+
 	echo "sudo nixos-rebuild build --flake /etc/nixos#nixos switch"
 	sudo nixos-rebuild build --flake /etc/nixos#nixos switch
+
+    echo "source ~/.bashrc"
 	source ~/.bashrc
 	backupnix
 	echo "Backed up configs to ~/my-nix | REMEMBER TO 'git push' to GitHub"

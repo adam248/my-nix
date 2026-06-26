@@ -54,17 +54,6 @@ in
       #./nordvpn.nix # Include custom NordVPN CLI derivation
     ];
 
-  nixpkgs.overlays = [
-
-    # OpenBlas takes too long to test, i think due to incorrect hardware ID from its test suite
-    (final: prev: {
-      openblas = prev.openblas.overrideAttrs (_: {
-        doCheck = false;
-        });
-      })
-
-    ];
-
   # Latest Kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
   # Default Kernel
@@ -164,8 +153,8 @@ in
     rocmEnv = pkgs.symlinkJoin {
       name = "rocm-combined";
       paths = with pkgs.rocmPackages; [
-        rocblas
-        hipblas
+        # Temporarily keep this minimal to avoid hipblaslt/rocblas build failures.
+        # Re-add rocblas/hipblas later once the base system rebuild is stable.
         clr
       ];
     };
@@ -351,7 +340,7 @@ in
   programs.kdeconnect.enable = true;
 
   # Enable Firefox
-  programs.firefox.enable = true;
+  programs.firefox.enable = false;
 
   # Enable steam
   programs.steam = {
@@ -534,7 +523,7 @@ in
       kid3 # Audio file meta data editor
       krita
       lazygit
-      libreoffice
+      #libreoffice # temporarily disabled: very long source build
       mangohud
       mangojuice
       #neofetch
@@ -791,8 +780,19 @@ in
     max-jobs = 1;
     cores = 1;
     # Add third-party cache without disabling the default cache.nixos.org.
-    extra-substituters = [ "https://nix-citizen.cachix.org" ];
-    extra-trusted-public-keys = [ "nix-citizen.cachix.org-1:lPMkWc2X8XD4/7YPEEwXKKBg+SVbYTVrAaLA2wQTKCo=" ];
+    extra-substituters = [ "https://nix-community.cachix.org" "https://nix-citizen.cachix.org" ];
+    extra-trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" "nix-citizen.cachix.org-1:lPMkWc2X8XD4/7YPEEwXKKBg+SVbYTVrAaLA2wQTKCo=" ];
+  };
+
+  # Apply Zen 4 CPU tuning only when the Nix daemon compiles locally (binary
+  # cache misses). These variables are not part of derivation hashes, so
+  # substituters still match and cached artifacts are used unchanged. We avoid
+  # nixpkgs.hostPlatform.gcc.arch because that changes hashes and would force a
+  # full local rebuild of the system instead of optimizing incidental builds.
+  nix.envVars = {
+    NIX_CFLAGS_COMPILE = "-march=znver4 -mtune=znver4";
+    NIX_CXXFLAGS_COMPILE = "-march=znver4 -mtune=znver4";
+    RUSTFLAGS = "-C target-cpu=znver4";
   };
 
   # Automate Nix garbage collection
