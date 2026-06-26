@@ -54,8 +54,16 @@ in
       #./nordvpn.nix # Include custom NordVPN CLI derivation
     ];
 
-  # Latest Kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Latest kernel, compiled for this machine's CPU (CONFIG_X86_NATIVE_CPU).
+  # Scoped to boot.kernelPackages only so userspace packages keep matching
+  # binary cache derivations; only the kernel and its module set rebuild.
+  boot.kernelPackages = pkgs.linuxPackages_latest.extend (self: super: {
+    kernel = super.kernel.override {
+      structuredExtraConfig = with lib.kernel; {
+        X86_NATIVE_CPU = yes;
+      };
+    };
+  });
   # Default Kernel
   # Install the latest Linux Kernel available
   # If nothing is specified then the LTS kernal for the current NixOS release is installed
