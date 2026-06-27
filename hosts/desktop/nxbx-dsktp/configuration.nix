@@ -22,22 +22,22 @@ let
     (flameshot.override { enableWlrSupport = true; })
     #anki #build-failed # Spaced repetion flashcard program (for language learning)
 
-    #authenticator
-    #beyond-all-reason
-    #claude-code
+    authenticator
+    beyond-all-reason
+    claude-code
     code-cursor
     #comma
-    #decent-sampler # My very first nixpkgs contrib! Yay!
-    #discord
-    #gpu-screen-recorder
-    #gpu-screen-recorder-gtk
+    decent-sampler # My very first nixpkgs contrib! Yay!
+    discord
+    gpu-screen-recorder
+    gpu-screen-recorder-gtk
     #i2pd
     #ledger-live-desktop
     #muse-sounds-manager
-    #onlyoffice-desktopeditors
+    onlyoffice-desktopeditors
     #openai-whisper # maybe building openblas which takes a long time to compile
-    #qbittorrent
-    #qpwgraph
+    qbittorrent
+    qpwgraph
     telegram-desktop
     #tmuxifier
     #varia
@@ -504,51 +504,51 @@ in
 
 
       # Stable Packages
-      #alsa-lib freetype
-      #alsa-utils alsa-scarlett-gui # audio management
-      #audacity
+      alsa-lib freetype
+      alsa-utils alsa-scarlett-gui # audio management
+      audacity
       #authy
-      #blender
+      blender
       brave
       #dropbox
       #element-desktop
       #feh # light-weight image viewer
-      #flameshot # screenshots
+      flameshot # screenshots
       #gh # Github CLI tool
       #gimp - use the flatpak version (because it updated to 3.0 first)
       #github-desktop
       #gitkraken
       #gnuradio
-      #google-chrome
+      google-chrome
       #guitarix # Guitar Amp Emulator
-      #handbrake
-      #imagemagick
-      #inkscape
-      #kdePackages.kdenlive
+      handbrake
+      imagemagick
+      inkscape
+      kdePackages.kdenlive
       keepass xdotool
       keymapp # moonlander ZSA app
       #kid3 # Audio file meta data editor
-      #krita
+      krita
       #lazygit
       #libreoffice # temporarily disabled: very long source build
       mangohud
       mangojuice
       fastfetch
       #obs-studio
-      #obsidian
+      obsidian
       #openttd
       #oh-my-git
-      #piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
-      #qdirstat
+      piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
+      qdirstat
       #realvnc-vnc-viewer # failed to build when switching to flakes/26.05
-      #reaper 
+      reaper 
       #rust-analyzer
       #scribus # OSS Alt for Publisher / InDesign / Affinity Designer
       #shotwell # photo viewer and management
-      #sparrow # Bitcoin wallet
-      #starship # customize shell prompt
-      #thunderbird
-      #transcribe
+      sparrow # Bitcoin wallet
+      starship # customize shell prompt
+      thunderbird
+      transcribe
       trezor-suite trezor-udev-rules
       #units
       #vscode
@@ -608,8 +608,6 @@ in
   # Available to all users (including root)
   environment.systemPackages = with pkgs; [
     #easyeffects # audio effects for pipewire audio
-    #htop
-    #python3 --disabled due to build error
 
     appimage-run
 
@@ -620,9 +618,9 @@ in
     #kdePackages.akonadi # storage service for PIM data
     #kdePackages.discover # for easier flatpak management
     #kdePackages.korganizer # Organizational assistant,
-    #kdePackages.okular # universal document viewer (replacing gwenviewer)
+    kdePackages.okular # universal document viewer (replacing gwenviewer)
     #kdePackages.spectacle # screenshot application
-    #kdePackages.kcharselect # Tool to select and copy special characters
+    kdePackages.kcharselect # Tool to select and copy special characters
 
     eza #exa replacement # ls replacement
     fd # required for nvim telescope
@@ -641,11 +639,9 @@ in
     nh # NH is a modern helper utility aims to consolidate and reimplement some of the commands from the NixOS ecosystem
     nix
     #nordvpn #broken in 25.11 waiting for nordvpn to be added to nixpkgs
-    #qpwgraph # using the unstable version
     #onionshare-gui # this is broken on nixos (use flatpak)
     ranger
     ripgrep # required for nvim telescope live-grep
-    #spacetimedb # USE THE CARGO installer via a Rust env!!!
     spice # virt manager helper
     sqlitebrowser
     stress-ng # Stress testing CPU, GPU, and more
