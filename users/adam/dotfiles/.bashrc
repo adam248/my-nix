@@ -3,8 +3,8 @@ eval "$(starship init bash)"
 
 # Aliases
 # Manage NixOS system configurations and updates
-alias config='sudo vim ~/my-nix/my-nix/hosts/desktop/nxbx-dsktp/configuration.nix'
-alias configf='sudo vim ~/my-nix/my-nix/hosts/desktop/nxbx-dsktp/flake.nix'
+alias config='sudo vim ~/my-nix/hosts/desktop/nxbx-dsktp/configuration.nix'
+alias configf='sudo vim ~/my-nix/hosts/desktop/nxbx-dsktp/flake.nix'
 alias hconfig='sudo vim /etc/nixos/hardware-configuration.nix'
 #alias update='sudo nixos-rebuild switch'
 
