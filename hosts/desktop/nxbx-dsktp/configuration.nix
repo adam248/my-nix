@@ -486,7 +486,7 @@ in
   users.users."adam" = {
     isNormalUser = true;
     extraGroups = [
-      "wheel" "video" "audio" "networkmanager" "lp" "scanner" "libvirtd"
+      "wheel" "video" "render" "audio" "networkmanager" "lp" "scanner" "libvirtd"
       "wireshark" "docker" "nordvpn"
     ];
     initialPassword = "adam";
@@ -508,7 +508,7 @@ in
       alsa-utils alsa-scarlett-gui # audio management
       audacity
       #authy
-      blender
+      #blender # use steam or flatpak
       brave
       #dropbox
       #element-desktop
@@ -521,27 +521,26 @@ in
       #gnuradio
       google-chrome
       #guitarix # Guitar Amp Emulator
-      handbrake
+      #handbrake # use ffmpeg
       imagemagick
       inkscape
       kdePackages.kdenlive
       keepass xdotool
       keymapp # moonlander ZSA app
       #kid3 # Audio file meta data editor
-      krita
+      #krita # use the flatpak
       #lazygit
       #libreoffice # temporarily disabled: very long source build
       mangohud
       mangojuice
       fastfetch
       #obs-studio
-      obsidian
+      #obsidian # use flatpak
       #openttd
       #oh-my-git
       piper # for my Logitech logitech Mouse - Frontend for ratbagd mouse config daemon (requires services.ratbagd.enable)
       qdirstat
       #realvnc-vnc-viewer # failed to build when switching to flakes/26.05
-      reaper 
       #rust-analyzer
       #scribus # OSS Alt for Publisher / InDesign / Affinity Designer
       #shotwell # photo viewer and management
@@ -681,12 +680,10 @@ in
 
   };
 
-  # Patch Environment Variables
-  environment.sessionVariables = rec {
-    # required for Nixified AI's InvokeAI on AMD GPU
-    HSA_OVERRIDE_GFX_VERSION = "10.3.0";   
-  };
-  
+  # ROCm/HSA: do not set HSA_OVERRIDE_GFX_VERSION.
+  # A previous value of 10.3.0 was wrong for this host (dGPU gfx1100, iGPU gfx1036).
+  # Leave unset so ROCm auto-detection works as designed; if an override is ever
+  # required here, use gfx1100 (11.0.0) for the dGPU—not 10.3.0.
   environment.variables = {
       DSSI_PATH   = "$HOME/.dssi:$HOME/.nix-profile/lib/dssi:/run/current-system/sw/lib/dssi";
       LADSPA_PATH = "$HOME/.ladspa:$HOME/.nix-profile/lib/ladspa:/run/current-system/sw/lib/ladspa";

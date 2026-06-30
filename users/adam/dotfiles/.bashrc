@@ -137,8 +137,8 @@ function update {
 	echo "sudo rsync -avh --delete /home/adam/my-nix/hosts/desktop/nxbx-dsktp/ /etc/nixos/"
     sudo rsync -avh --delete /home/adam/my-nix/hosts/desktop/nxbx-dsktp/ /etc/nixos/
 
-	echo "sudo nixos-rebuild build --flake /etc/nixos#nixos switch"
-	sudo nixos-rebuild build --flake /etc/nixos#nixos switch
+	echo "sudo nixos-rebuild switch --flake /etc/nixos#nixos"
+	sudo nixos-rebuild switch --flake /etc/nixos#nixos
 
     echo "source ~/.bashrc"
 	source ~/.bashrc
